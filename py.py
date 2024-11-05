@@ -270,7 +270,7 @@ def feedback():
 
 @app.route('/submit_feedback', methods=['POST'])
 def submit_feedback():
-    name = request.form['name']  # Получение имени пользователя из формы
+    name = request.form['name'] 
     feedback = request.form['feedback']  # Получение текста отзыва из формы
 
     save_feedback_to_db(name, feedback)  # Сохранение отзыва в базе данных
@@ -397,7 +397,7 @@ def process_payment():
     card_number = request.form.get('card_number')
     card_expiry = request.form.get('card_expiry')
     card_cvv = request.form.get('card_cvv')
-    # Предположим, что amount_paid и order_id вы получаете каким-то образом
+   
     amount_paid = 100  # Пример
     order_id = 1       # Пример
 
