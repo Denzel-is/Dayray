@@ -16,6 +16,8 @@ Step 3: open a new terminal using the key combination "Ctrl + `" and enter the f
    pip3 install Flask
    pip3 install psycopg2
    pip install rapidfuzz
+   pip install openai
+
 
 ---------------------------------------------------------------------------  
   Next, you need to create a new PostgreSQL database above, and insert the code from the queryes.txt file there and also connect it in the Python file in connection.
