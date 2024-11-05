@@ -17,6 +17,8 @@ Step 3: open a new terminal using the key combination "Ctrl + `" and enter the f
    pip3 install psycopg2
    pip install rapidfuzz
    pip install openai
+   pip install --upgrade openai
+
 
 
 ---------------------------------------------------------------------------  
