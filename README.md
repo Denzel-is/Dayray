@@ -20,3 +20,5 @@ Step 3: open a new terminal using the key combination "Ctrl + `" and enter the f
   Substitute instead of host - 78.141.227.124 - lolalhost and the name of your database.
 
   Next, run the Python file and enjoy the site!
+
+  The assistant is currently being developed
