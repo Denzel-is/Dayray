@@ -1,0 +1,187 @@
+/* Основные стили для страницы */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #F8F9FA; /* Светлый фон */
+    color: #34495E; /* Темно-синий текст */
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #2C3E50; /* Темно-синий фон */
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center; /* Центрируем содержимое */
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 60px; /* Фиксируем высоту для лучшего выравнивания */
+}
+
+#backButton {
+    position: absolute;
+    left: 20px;
+    background-color: white;
+    color: #2C3E50;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 2px solid #386898;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#backButton:hover {
+    background-color: #2C3E50;
+    color: white;
+}
+
+/* Стили для заголовка и формы */
+main {
+    text-align: center;
+    padding: 100px 0 40px; /* Увеличен верхний отступ для правильного отображения */
+}
+
+/* Стили для формы обратной связи */
+.feedback-form {
+    width: 50%;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: #FFF;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-top: 5px solid #3498DB;
+}
+
+/* Стили для полей ввода и текстовых областей */
+.feedback-form input[type="text"],
+.feedback-form textarea {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #BDC3C7;
+    border-radius: 8px;
+    font-size: 1.1em;
+}
+
+.feedback-form button {
+    width: 100%;
+    padding: 15px;
+    background-color: #27AE60;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+}
+
+.feedback-form button:hover {
+    background-color: #229954;
+}
+
+/* Стили для контейнера отзывов */
+.feedback-container {
+    width: 70%;
+    margin: 30px auto;
+    background-color: #FFF;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #3498DB;
+}
+
+/* Стили для заголовка */
+.feedback-container h2 {
+    color: #2C3E50;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #DDE2E5;
+}
+
+/* Стили для списка отзывов */
+.feedback-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Пространство между отзывами */
+}
+
+/* Оформление одного отзыва */
+.feedback-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    background: #F9F9F9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.feedback-item:hover {
+    background-color: #F1F1F1;
+}
+
+/* Секция с именем пользователя и датой */
+.feedback-info {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 20px; /* Отступ справа для отделения от комментария */
+    text-align: left;
+}
+
+.feedback-name {
+    font-weight: bold;
+    color: #2C3E50;
+    font-size: 1.2em;
+}
+
+.feedback-date {
+    font-size: 0.85em;
+    color: #7F8C8D;
+    margin-top: 5px;
+}
+
+/* Секция с текстом отзыва */
+.feedback-text {
+    width: 75%;
+    text-align: left;
+    color: #34495E;
+    font-size: 1.5em;
+    line-height: 1.6;
+    
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+    .feedback-form, .feedback-container {
+        width: 90%;
+    }
+
+    .feedback-form {
+        padding: 30px;
+    }
+
+    .feedback-item {
+        flex-direction: column; /* Для мобильных устройств отзывы располагаются вертикально */
+    }
+
+    .feedback-info {
+        width: 100%;
+        text-align: center;
+        padding-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .feedback-text {
+        width: 100%;
+        text-align: center;
+    }
+}

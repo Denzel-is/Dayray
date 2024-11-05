@@ -1,0 +1,475 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-top: 80px; /* Отступ, равный или чуть больше высоты хедера */
+    box-sizing: border-box;
+    background-color: #f4f4f4;
+}
+
+html {
+    scroll-behavior: smooth; /* Плавный скроллинг */
+}
+
+header {
+    background-color: #fff;
+    color: #333;
+    padding: 15px 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+}
+
+:target::before {
+    content: "";
+    display: block;
+    height: 70px; /* Высота хедера */
+    margin: -70px 0 0; /* Отрицательный отступ равный высоте хедера */
+}
+
+.header-content {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.header-content .abob {
+    color: #333;
+    margin-right: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.header-content .abob:hover {
+    text-decoration: underline;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: #333;
+    text-decoration: none;
+}
+
+.cart-link {
+    height: 20px;
+    width: 20px;
+    text-decoration: none;
+}
+
+.cart-link img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Стили для баннера */
+.banner {
+    background-color: #fff;
+    padding: 0;
+    text-align: center;
+    color: white;
+    padding: 28px 0;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.banner-img {
+    width: 100%;
+    overflow: hidden;
+}
+
+.banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Стили для продуктов */
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+}
+
+.product-item {
+    width: 300px;
+    background-color: white;
+    margin: 10px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.product-item img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+.product-item p {
+    margin: 10px 0;
+}
+
+.product-item a {
+    color: #333;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.product-item a:hover {
+    background-color: #f8f8f8;
+    color: #555;
+}
+
+.product-item:hover img {
+    transform: scale(1.05);
+}
+
+/* Стили для поставщиков */
+.suppliers {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.supplier {
+    width: 300px;
+    text-align: center;
+    margin: 0 15px;
+}
+
+.supplier-circle {
+    height: 150px;
+    width: 150px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(1,1,1,0.1);
+}
+
+.supplier-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.supplier h3 {
+    margin: 10px 0;
+    font-size: 1.5em;
+}
+
+.supplier p {
+    margin: 5px 0;
+    font-size: 1em;
+}
+
+/* Увеличение размера второго поставщика */
+.suppliers .supplier:nth-child(2) {
+    transform: scale(1.1);
+    margin: 0 20px;
+}
+
+.suppliers .supplier:nth-child(2) .supplier-circle {
+    height: 165px;
+    width: 165px;
+}
+
+.suppliers .supplier:nth-child(2) h3 {
+    font-size: 1.32em;
+}
+
+.suppliers .supplier:nth-child(2) p {
+    font-size: 1.1em;
+}
+
+/* Оранжевый разделитель */
+.orange-separator {
+    background-color: orange;
+    height: 50px;
+    width: 100%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Стили для футера */
+footer {
+    background: linear-gradient(135deg, #355C7D, #6C5B7B); /* Градиентный фон */
+    color: #fff;
+    padding: 40px 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-section {
+    flex: 1;
+    margin: 20px;
+    min-width: 200px;
+}
+
+.footer-section h3 {
+    color: #FF6B6B;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    position: relative;
+}
+
+.footer-section h3::after {
+    content: '';
+    width: 50px;
+    height: 3px;
+    background: #FF6B6B;
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+}
+
+.footer-section p,
+.footer-section a {
+    font-size: 1em;
+    line-height: 1.6;
+    color: #B8E0D2;
+}
+
+.footer-section a {
+    color: #FFD3B4;
+    text-decoration: none;
+}
+
+.footer-section a:hover {
+    text-decoration: underline;
+    color: #FFB6B6;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 30px;
+}
+
+.footer-bottom p {
+    color: #B8E0D2;
+    font-size: 0.9em;
+}
+
+/* Декоративный элемент в футере */
+footer::before {
+    content: '';
+    display: block;
+    height: 3px;
+    width: 60%;
+    background: linear-gradient(to right, #FF6B6B, #FFD3B4);
+    margin: 0 auto 20px;
+}
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-top: 80px; /* Отступ, равный или чуть больше высоты хедера */
+    box-sizing: border-box;
+    background-color: #f4f4f4;
+}
+
+html {
+    scroll-behavior: smooth; /* Плавный скроллинг */
+}
+
+header {
+    background-color: #fff;
+    color: #333;
+    padding: 15px 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+:target::before {
+    content: "";
+    display: block;
+    height: 70px; /* Высота хедера */
+    margin: -70px 0 0; /* Отрицательный отступ равный высоте хедера */
+}
+
+.header-content {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between; /* Изменено для правильного позиционирования */
+    align-items: center;
+}
+
+.logo-title {
+    display: flex;
+    align-items: center;
+}
+
+.logo-title img {
+    height: 50px; /* Настройте размер логотипа */
+    margin-right: 10px;
+}
+
+.logo-title h1 {
+    font-size: 2em;
+    margin: 0;
+}
+
+.header-content .abob {
+    color: #333;
+    margin-right: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.header-content .abob:hover {
+    text-decoration: underline;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: #333;
+    text-decoration: none;
+}
+
+.auth-cart {
+    display: flex;
+    align-items: center;
+
+}
+
+.auth-cart a {
+    margin-left: 15px;
+    color: #333;
+    text-decoration: none;
+}
+
+.auth-cart a:hover {
+    text-decoration: underline;
+}
+
+.cart-link {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.cart-link img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px; /* Отступ между иконкой и текстом */
+}
+
+/* Кнопка AI */
+.ai-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: orange;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+/* Окно чата */
+.chat-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    max-height: 500px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none; /* Скрыто по умолчанию */
+    z-index: 1001;
+    flex-direction: column;
+}
+
+/* Заголовок окна чата */
+.chat-header {
+    background-color: orange;
+    color: white;
+    padding: 10px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Основное окно чата */
+.chat-body {
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+    background-color: #f4f4f4;
+}
+
+/* Ввод и кнопка отправки */
+.chat-footer {
+    display: flex;
+    padding: 10px;
+}
+
+.chat-footer input[type="text"] {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+.chat-footer button {
+    background-color: orange;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+

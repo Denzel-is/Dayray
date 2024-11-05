@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат с ИИ-ассистентом</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+        .chat-toggle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: orange;
+            color: white;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+        }
+        .chat-box {
+            display: none;
+            flex-direction: column;
+            width: 300px;
+            height: 400px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: orange;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+        .chat-header button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .chat-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .chat-footer {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .chat-footer input {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .chat-footer button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: none;
+            background-color: orange;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #e6f2ff;
+            align-self: flex-end;
+        }
+        .ai-message {
+            background-color: #f0f0f0;
+            align-self: flex-start;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <button class="chat-toggle" onclick="toggleChat()">AI</button>
+        
+        <div id="chatBox" class="chat-box">
+            <div class="chat-header">
+                <h2>Чат с ИИ-ассистентом</h2>
+                <button onclick="toggleChat()">✕</button>
+            </div>
+            <div id="chatBody" class="chat-body"></div>
+            <div class="chat-footer">
+                <input id="chatInput" type="text" placeholder="Введите сообщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                <button onclick="sendMessage()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function toggleChat() {
+        const chatBox = document.getElementById("chatBox");
+        chatBox.style.display = (chatBox.style.display === "none" || chatBox.style.display === "") ? "flex" : "none";
+    }
+
+    function sendMessage() {
+        const chatBody = document.getElementById("chatBody");
+        const chatInput = document.getElementById("chatInput");
+        const message = chatInput.value.trim();
+
+        if (message) {
+            // Отображаем сообщение пользователя
+            appendMessage("Вы", message, "user-message");
+
+            chatInput.value = "";  // Очищаем поле ввода
+
+            // Отображаем индикатор загрузки
+            const loadingId = appendMessage("AI", "Печатает...", "ai-message");
+
+            // Отправляем сообщение на сервер
+            fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Удаляем индикатор загрузки
+                removeMessage(loadingId);
+
+                // Отображаем ответ AI
+                appendMessage("AI", data.reply, "ai-message");
+            })
+            .catch(error => {
+                console.error("Ошибка:", error);
+                // Удаляем индикатор загрузки
+                removeMessage(loadingId);
+
+                // Отображаем сообщение об ошибке
+                appendMessage("AI", "Произошла ошибка при обработке запроса. Пожалуйста, попробуйте еще раз.", "ai-message error");
+            });
+        }
+    }
+
+    function appendMessage(sender, text, className) {
+        const chatBody = document.getElementById("chatBody");
+        const messageElement = document.createElement("div");
+        messageElement.className = `message ${className}`;
+        messageElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
+        chatBody.appendChild(messageElement);
+        chatBody.scrollTop = chatBody.scrollHeight;
+        return messageElement.id = `msg-${Date.now()}`;  // Возвращаем ID сообщения
+    }
+
+    function removeMessage(id) {
+        const message = document.getElementById(id);
+        if (message) {
+            message.remove();
+        }
+    }
+    </script>
+</body>
+</html>

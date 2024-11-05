@@ -1,0 +1,143 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #fff;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.payment{
+    display: flex;
+    justify-content: center;
+}
+#backButton {
+    cursor: pointer;
+    font-size: medium;
+    color: black;
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+#backButton:hover {
+    background-color: #f4f4f4;
+}
+
+.cart-title {
+    text-align: center;
+    margin-top: 80px; /* Изменено с учетом фиксированного header */
+}
+
+.cart-title h1 {
+    font-size: 2em;
+}
+
+.cart-container {
+    background-color: #fff;
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.cart-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-right: 10px;
+}
+.cart-image img{
+    width: 150px;
+    height: 150px;
+}
+
+.cart-item p {
+    margin: 0 10px;
+}
+
+.price {
+    color: #4caf50;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+.remove-item-button {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.remove-item-button:hover {
+    background-color: #d32f2f;
+}
+
+#totalPrice {
+    font-size: 20px;
+    color: #4caf50;
+    margin-top: 20px;
+}
+
+.add-to-cart-button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.add-to-cart-button:hover {
+    background-color: #388e3c;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-button {
+    padding: 5px 10px;
+    margin: 0 5px;
+    background-color: #3498DB;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.quantity {
+    font-size: 1em;
+}

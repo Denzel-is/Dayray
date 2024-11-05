@@ -1,0 +1,168 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    padding-top: 60px;
+}
+/* background-color: #2C3E50; Темно-синий фон для шапки */
+
+header {
+    background-color: #2C3E50; /* Оранжевый фон */
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center; /* Центрируем содержимое */
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+#backButton {
+    position: absolute; /* Фиксируем кнопку слева */
+    left: 20px;
+    background-color: white;
+    color:  #2C3E50; /* Оранжевый текст */
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 2px solid  #386898;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: bold;
+}
+
+header button {
+    background-color: white; /* Белый фон */
+    color:  #2C3E50; /* Оранжевый текст */
+    padding: 10px 20px;
+    border: 2px solid  #386898;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+
+#backButton:hover {
+    background-color:  #2C3E50;
+    color: white;
+}
+
+header form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+header input[type="text"] {
+    padding: 10px 20px;
+    border-radius: 30px; /* Округленные углы */
+    border: 2px solid white; /* Белая рамка */
+    width: 300px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+
+header button:hover {
+    background-color:  #ffffff; /* Темно-синий фон при наведении */
+}
+
+
+
+.product-container {
+    padding-top: 60px !important;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 35px;
+    padding: 20px;
+    text-decoration: none;
+    
+}
+
+.product {
+    text-align: center;
+    border: 1px solid #ddd;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content:center; /* Обеспечивает равномерное распределение пространства */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+/* Стилизация названия, описания, цены и наличия товара */
+.product-title,
+.product-description,
+.product-price,
+.product-stock {
+    margin: 10px 0; /* Унифицированные отступы для всех элементов */
+}
+/* Декоративные элементы */
+.product::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #47db34, #E67E22); /* Градиентная полоса в верхней части */
+    border-radius: 8px 8px 0 0; /* Скругление только верхних углов */
+}
+.product img {
+    width: 250px;
+    height: 300px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.product h2, .product .price {
+    margin: 5px 0;
+}
+.product-title {
+    font-weight: bold;
+    color: #34495E;
+}
+
+.product-price {
+    color: rgb(34, 190, 34); /* Установка цвета текста цены на зеленый */
+    font-weight: bold;
+    margin-top: 10px; /* Добавляем отступ сверху, чтобы отделить цену от описания */
+}
+
+/* Убираем подчеркивание текста и стилизуем ссылки */
+.product a {
+    text-decoration: none;
+    color: inherit; /* Цвет текста наследуется от родительского элемента */
+    border-radius: 8px; /* Скругленные углы для изображения */
+}
+.product .product-stock {
+    color: red;
+    margin-top: 10px; /* Отступ сверху для текста "В наличии" */
+}
+.product-price, .product-stock {
+    font-size: 1.1em;
+    margin-top: auto; /* Автоматический верхний отступ */
+}
+.product-description {
+    color: #555;
+    font-size: 0.9em;
+}
+
+.product-stock {
+    color: red;
+    margin-bottom: 10px; /* Небольшой дополнительный отступ снизу */
+}
+@media (max-width: 800px) {
+    .product-container {
+        justify-content: space-around;
+    }
+}

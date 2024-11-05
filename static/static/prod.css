@@ -1,0 +1,112 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #2C3E50;
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    justify-content: space-evenly; /* Выравнивание всех элементов по центру */
+}
+
+.header-button {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    padding: 10px 15px;
+    background-color: #3498DB;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.header-button:hover {
+    background-color: #2980B9;
+}
+
+.product-details-container {
+    width: 80%;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Центрирование всего содержимого контейнера */
+    
+}
+
+.product-title {
+    font-size: 1.8em;
+    color: #34495E;
+    margin-bottom: 20px;
+}
+
+.product-description {
+    color: #555;
+    font-size: 1em;
+    margin-bottom: 15px;
+}
+
+.product-price {
+    color: green;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.product-stock {
+    color: red;
+    font-size: 1em;
+    margin-bottom: 20px;
+}
+
+.back-button, .product-details-container form button {
+    background-color: #E74C3C;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-block;
+    margin: 5px 0;
+}
+
+.back-button:hover, .product-details-container form button:hover {
+    background-color: #C0392B;
+}
+
+.product-image img {
+    width: 800px; /* Установка ширины изображения */
+    height: 850px; /* Установка высоты изображения */
+    object-fit: cover;
+    margin-bottom: 20px;
+    display: block; /* Для центрирования изображения */
+    margin-left: auto;
+    margin-right: auto;
+}
+.header-button, .cart-link {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    padding: 10px 15px;
+    background-color: #3498DB;
+    border-radius: 5px;
+    display: flex; /* Для выравнивания иконки и текста */
+    align-items: center; /* Центрирование содержимого кнопки по вертикали */
+    transition: background-color 0.3s;
+}
+
+.header-button:hover, .cart-link:hover {
+    background-color: #2980B9;
+}
+
+.cart-link img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
