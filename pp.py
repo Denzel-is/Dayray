@@ -3,9 +3,9 @@ import json
 
 
 conn = psycopg2.connect(
-    dbname="postgres",
+    dbname="Dayray",
     user="postgres",
-    password="1234",
+    password="food",
     port="5432"
 )
 

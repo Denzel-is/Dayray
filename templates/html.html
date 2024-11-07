@@ -44,7 +44,7 @@
                 </nav>
                 <div class="auth-cart">
                     {% if 'username' in session %}
-                        <a href="{{ url_for('logout') }}" class="abob">Выход</a>
+                        <a href="{{ url_for('auth.logout') }}" class="abob">Выход</a>
                     {% else %}
                         <a href="/login" class="abob">Войти</a>
                         <a href="/register" class="abob">Регистрация</a>
