@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request, redirect,session
 from database import connectionbd
 
 feedback_bp = Blueprint('feedback', __name__)
@@ -19,7 +19,7 @@ def feedback():
 
 @feedback_bp.route('/submit_feedback', methods=['POST'])
 def submit_feedback():
-    name = request.form['name']
+    name = session.get('username')
     feedback = request.form['feedback']
     connection = connectionbd()
     cursor = connection.cursor()

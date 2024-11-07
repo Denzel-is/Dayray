@@ -71,4 +71,5 @@ def register():
 @auth_bp.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('cart', None)
     return redirect('/')
