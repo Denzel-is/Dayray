@@ -10,20 +10,23 @@
     </head>
     <body>
         <div class="ai-button" onclick="toggleChat()">AI</div>
-        <!-- Окно чата -->
-<div class="chat-container" id="chatContainer">
-    <div class="chat-header">
-        <h2>Чат с AI</h2>
-        <button onclick="toggleChat()">X</button>
-    </div>
-    <div class="chat-body" id="chatBody">
-        <!-- Сообщения чата будут здесь -->
-    </div>
-    <div class="chat-footer">
-        <input type="text" id="chatInput" placeholder="Введите сообщение...">
-        <button onclick="sendMessage()">Отправить</button>
-    </div>
-</div>
+  
+        <body>
+            <div class="chat-container">
+                <button class="chat-toggle" onclick="toggleChat()">AI</button>
+                
+                <div id="chatBox" class="chat-box">
+                    <div class="chat-header">
+                        <h2>Чат с ИИ-ассистентом</h2>
+                        <button onclick="toggleChat()">✕</button>
+                    </div>
+                    <div id="chatBody" class="chat-body"></div>
+                    <div class="chat-footer">
+                        <input id="chatInput" type="text" placeholder="Введите сообщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                        <button onclick="sendMessage()">Отправить</button>
+                    </div>
+                </div>
+            </div>
         <header>
             <div class="header-content">
                 <div class="logo-title">
@@ -41,7 +44,7 @@
                 </nav>
                 <div class="auth-cart">
                     {% if 'username' in session %}
-                        <a href="{{ url_for('logout') }}" class="abob">Выход</a>
+                        <a href="{{ url_for('auth.logout') }}" class="abob">Выход</a>
                     {% else %}
                         <a href="/login" class="abob">Войти</a>
                         <a href="/register" class="abob">Регистрация</a>

@@ -13,9 +13,9 @@
         <h1>Отзывы</h1>
         <section>
             <div class="feedback-form">
-                <form action="{{ url_for('submit_feedback') }}" method="post">
-                    <label for="name">Имя:</label>
-                    <input type="text" id="name" name="name" required>
+                <form action="{{ url_for('feedback.submit_feedback') }}" method="post">
+                    <!-- <label for="name">Имя:</label>
+                    <input type="text" id="name" name="name" required> -->
     
                     <label for="feedback">Отзыв:</label>
                     <textarea id="feedback" name="feedback" required></textarea>

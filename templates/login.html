@@ -9,7 +9,7 @@
 <body>
     <div class="login-container">
         <h1>Войти</h1>
-        <form action="{{ url_for('login') }}" method="POST">
+        <form action="{{ url_for('auth.login') }}" method="POST">
             <div class="form-group">
                 <label for="username">Имя пользователя:</label>
                 <input type="text" id="username" name="username" required>
