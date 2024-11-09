@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request,Blueprint
 from flask_cors import CORS
 import logging
 from concurrent_log_handler import ConcurrentRotatingFileHandler
@@ -8,20 +8,26 @@ import openai
 import numpy as np
 from dotenv import load_dotenv  # Для загрузки переменных окружения
 
-app = Flask(__name__)
-CORS(app)
+ai_bp = Blueprint('ai', __name__)
 
 # Загрузка переменных окружения из файла .env
 load_dotenv()
 
 # Установка API ключа OpenAI из переменной окружения
 openai.api_key = os.getenv('OPENAI_API_KEY')
+logger = logging.getLogger('ai_logger')
+logger.setLevel(logging.INFO)
 
+# Set up logging handler
+handler = ConcurrentRotatingFileHandler("app.log", maxBytes=1024 * 1024, backupCount=5)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 # Проверка, что API-ключ установлен
 if openai.api_key:
-    app.logger.info('API key successfully loaded.')
+    logger.info('API key successfully loaded.')
 else:
-    app.logger.error('API key not found. Please set OPENAI_API_KEY in your .env file.')
+    logger.error('API key not found. Please set OPENAI_API_KEY in your .env file.')
 
 # Настройка логирования
 if not os.path.exists('logs'):
@@ -33,9 +39,9 @@ file_handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
 ))
 file_handler.setLevel(logging.INFO)
-app.logger.addHandler(file_handler)
-app.logger.setLevel(logging.INFO)
-app.logger.info('LAPKA Chat Bot startup')
+logger.addHandler(file_handler)
+logger.setLevel(logging.INFO)
+logger.info('LAPKA Chat Bot startup')
 
 # Загрузка данных из JSONL файла
 DATA = []
@@ -109,33 +115,32 @@ def generate_answer(user_question):
     answer = response['choices'][0]['message']['content'].strip()
     return answer
 
-@app.route('/')
+@ai_bp.route('/')
 def index():
-    app.logger.info('html page accessed')
-    return render_template('check_api.html')  # Убедитесь, что файл chat.html находится в папке templates
+    logger.info('html page accessed')
+    return render_template('html.html')  # Убедитесь, что файл chat.html находится в папке templates
 
-@app.route('/chat', methods=['POST'])
+@ai_bp.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
     if not data:
-        app.logger.warning('No JSON data provided in chat request')
+        logger.warning('No JSON data provided in chat request')
         return jsonify({"error": "No JSON data provided."}), 400
 
     user_message = data.get("message", "").strip()
     if not user_message:
-        app.logger.warning('Empty message received in chat request')
+        logger.warning('Empty message received in chat request')
         return jsonify({"error": "Message is empty."}), 400
 
-    app.logger.info(f'Received chat request: {user_message}')
+    logger.info(f'Received chat request: {user_message}')
 
     # Генерируем ответ с помощью модели GPT
     try:
         answer = generate_answer(user_message)
-        app.logger.info(f'Generated answer: {answer}')
+        logger.info(f'Generated answer: {answer}')
         return jsonify({"reply": answer})
     except Exception as e:
-        app.logger.error(f'Error generating answer: {e}')
+        logger.error(f'Error generating answer: {e}')
         return jsonify({"reply": "Извините, произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже."})
 
-if __name__ == "__main__":
-    app.run(debug=True)
+

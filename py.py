@@ -6,6 +6,7 @@ from cart import cart_bp
 from feedback import feedback_bp
 from database import connectionbd
 from pay import pay_bp
+from ai import ai_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -15,7 +16,7 @@ app.register_blueprint(products_bp)
 app.register_blueprint(cart_bp)
 app.register_blueprint(feedback_bp)
 app.register_blueprint(pay_bp)
-
+app.register_blueprint(ai_bp)
 
 @app.route('/')
 def mainp():
