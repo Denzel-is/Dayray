@@ -115,13 +115,14 @@ def generate_answer(user_question):
     answer = response['choices'][0]['message']['content'].strip()
     return answer
 
-@ai_bp.route('/')
-def index():
-    logger.info('html page accessed')
-    return render_template('html.html')  # Убедитесь, что файл chat.html находится в папке templates
+# @ai_bp.route('/')
+# def index():
+#     logger.info('html page accessed')
+#     return render_template('html.html')  # Убедитесь, что файл chat.html находится в папке templates
 
 @ai_bp.route('/chat', methods=['POST'])
 def chat():
+
     data = request.get_json()
     if not data:
         logger.warning('No JSON data provided in chat request')
