@@ -21,13 +21,13 @@
                 <p>{{ product['name'] }}</p>
                 <p class="price">{{ product['price'] }} тг.</p>
                 <div class="quantity-controls">
-                    <form action="{{ url_for('update_quantity', product_id=product['product_id']) }}" method="post">
+                    <form action="{{ url_for('cart.update_quantity', product_id=product['product_id']) }}" method="post">
                         <button type="submit" name="change" value="decrease" class="quantity-button">-</button>
                         <span class="quantity" id="quantity_{{ product['product_id'] }}">{{ product['quantity'] }}</span>
                         <button type="submit" name="change" value="increase" class="quantity-button">+</button>
                     </form>
                 </div>
-                <form action="{{ url_for('remove_from_cart', product_id=product['product_id']) }}" method="post">
+                <form action="{{ url_for('cart.remove_from_cart', product_id=product['product_id']) }}" method="post">
                     <button class="remove-item-button" type="submit">Удалить из корзины</button>
                 </form>
             </div>
