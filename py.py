@@ -12,7 +12,7 @@ from flask_admin.contrib.sqla import ModelView
 from wtforms import SelectField
 from wtforms.validators import DataRequired
 from prodAdmin import ProductAdminView
-#from ai import ai_bp
+from ai import ai_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -26,7 +26,7 @@ app.register_blueprint(products_bp)
 app.register_blueprint(cart_bp)
 app.register_blueprint(feedback_bp)
 app.register_blueprint(pay_bp, url_prefix='/payments')
-#app.register_blueprint(ai_bp)
+app.register_blueprint(ai_bp)
 admin = Admin(app, name='Admin Panel', template_mode='bootstrap4')
 
 class AdminModelView(ModelView):
