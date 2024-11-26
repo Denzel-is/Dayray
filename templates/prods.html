@@ -23,7 +23,7 @@
         <p class="product-stock">В наличии: {{ product_stock }} шт.</p> <!-- Используйте product_stock -->
 
         <a href="/" class="back-button">Назад к списку продуктов</a>
-        <form action="{{ url_for('add_to_cart') }}" method="post"onsubmit="return addToCartAlert()">
+        <form action="{{ url_for('cart.add_to_cart') }}" method="post"onsubmit="return addToCartAlert()">
             <input type="hidden" name="product_id" value="{{ product_id }}"> <!-- Используйте product_id -->
             <button type="submit">Добавить в корзину</button>
         </form>
