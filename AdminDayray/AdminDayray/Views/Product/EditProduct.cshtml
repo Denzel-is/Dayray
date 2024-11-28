@@ -1,0 +1,40 @@
+﻿@model AdminDayray.Migrations.Product
+
+@{
+    ViewData["Title"] = "Редактировать продукт";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-primary">Редактировать продукт</h2>
+
+    <form asp-action="EditProduct" method="post">
+        <input type="hidden" name="ProductId" value="@Model.ProductId" />
+        <input type="hidden" name="CategoryId" value="@Model.CategoryId" />
+
+        <div class="form-group">
+            <label for="Name">Название продукта</label>
+            <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
+        </div>
+        <div class="form-group">
+            <label for="Description">Описание</label>
+            <textarea class="form-control" id="Description" name="Description">@Model.Description</textarea>
+        </div>
+        <div class="form-group">
+            <label for="Price">Цена</label>
+            <input type="number" class="form-control" id="Price" name="Price" value="@Model.Price" required />
+        </div>
+        <div class="form-group">
+            <label for="StockQuantity">Количество на складе</label>
+            <input type="number" class="form-control" id="StockQuantity" name="StockQuantity" value="@Model.StockQuantity" required />
+        </div>
+        <div class="form-group">
+            <label for="MapP">Путь изображения</label>
+            <input type="text" class="form-control" id="MapP" name="MapP" value="@Model.MapP" />
+        </div>
+
+        <div class="mt-4">
+            <a asp-action="Details" asp-route-id="@Model.CategoryId" class="btn btn-secondary">Отмена</a>
+            <button type="submit" class="btn btn-success">Сохранить изменения</button>
+        </div>
+    </form>
+</div>

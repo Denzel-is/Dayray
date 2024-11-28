@@ -1,0 +1,26 @@
+﻿@model AdminDayray.Migrations.Reg
+
+@{
+    ViewData["Title"] = "Редактировать клиента";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-primary">Редактировать клиента</h2>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" name="CustomerId" value="@Model.CustomerId" />
+        <div class="form-group">
+            <label for="FirstName">Имя</label>
+            <input type="text" name="FirstName" value="@Model.FirstName" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="Email">Email</label>
+            <input type="email" name="Email" value="@Model.Email" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="City">Город</label>
+            <input type="text" name="City" value="@Model.City" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-success mt-3">Сохранить</button>
+    </form>
+</div>
