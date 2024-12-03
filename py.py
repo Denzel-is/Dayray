@@ -23,10 +23,17 @@ app.register_blueprint(feedback_bp)
 app.register_blueprint(pay_bp, url_prefix='/payments')
 app.register_blueprint(ai_bp)
 
+# Главная страница
 @app.route('/')
 def mainp():
+    # Получаем сообщение из сессии, если оно есть
+    payment_status = session.pop('payment_status', None)  # Убираем сообщение из сессии после отображения
+
+    # Получаем данные категорий из базы данных
     data = Category.query.all()
-    return render_template('html.html', postgres_data=data)
+
+    # Отправляем данные в шаблон
+    return render_template('html.html', postgres_data=data, payment_status=payment_status)
 
 with app.app_context():
     db.create_all()

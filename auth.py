@@ -25,10 +25,8 @@ def login():
             flash('Успешный вход!', 'success')
             
             # Перенаправляем в админку, если роль администратора, иначе на главную
-            if user.role == 'admin':
-                return redirect(url_for('admin.index'))  # Перенаправление в админку
-            else:
-                return redirect(url_for('mainp'))  # Перенаправление на главную страницу
+        
+            return redirect(url_for('mainp'))  # Перенаправление на главную страницу
 
         flash('Неверный логин или пароль', 'danger')  # Сообщение об ошибке
     return render_template('login.html')

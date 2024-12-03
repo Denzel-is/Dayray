@@ -9,8 +9,8 @@
 <body>
     <div class="modal">
         <form class="form" action="{{ url_for('pay.process_payment') }}" method="post">
-            <!-- Добавляем скрытое поле для передачи order_id -->
-            <input type="hidden" name="order_id" value="{{ order_id }}">
+            <!-- Поля с передачей идентификатора заказа и суммы -->
+            <input type="hidden" name="order_id" value="{{ order_id if order_id else '' }}">
             <input type="hidden" name="total" value="{{ total }}">
             
             <div class="paymentother">
@@ -24,31 +24,27 @@
             <div class="card-info">
                 <div class="input_container">
                     <label class="input_label">Адрес</label>
-                    <input class="input_field" name="address" type="text" placeholder="Введите адрес (город, улица, дом, квартира)...">
+                    <input class="input_field" name="address" type="text" placeholder="Введите адрес (город, улица, дом, квартира)..." required>
                 </div>
                 <div class="input_container">
                     <label class="input_label">Имя владельца карты</label>
-                    <input class="input_field" name="card_name" type="text" placeholder="Введите полное имя...">
+                    <input class="input_field" name="card_name" type="text" placeholder="Введите полное имя..." required>
                 </div>
                 <div class="input_container">
                     <label class="input_label">Номер карты</label>
-                    <input class="input_field" name="card_number" type="number" placeholder="0000 0000 0000 0000">
+                    <input class="input_field" name="card_number" type="text" placeholder="0000 0000 0000 0000" maxlength="16" required>
                 </div>
                 <div class="input_container">
                     <label class="input_label">Срок действия / CVV</label>
                     <div class="split">
-                        <input class="input_field" name="card_expiry" style="width: 250px;" type="text" placeholder="01/23">
-                        <input class="input_field" name="card_cvv" style="width: 110px;" type="number" placeholder="CVV">
+                        <input class="input_field" name="card_expiry" style="width: 250px;" type="text" placeholder="01/23" maxlength="5" required>
+                        <input class="input_field" name="card_cvv" style="width: 110px;" type="text" placeholder="CVV" maxlength="3" required>
                     </div>
                 </div>
             </div>
-        <form action="{{ url_for('pay.process_payment') }}" method="post">
-    <input type="hidden" name="order_id" value="{{ order_id }}">
-    <input type="hidden" name="total" value="{{ total }}">
-    <button class="checkout" type="submit">
-        <span>Оплатить</span>
-    </button>
-</form>
+            <button class="checkout" type="submit">
+                <span>Оплатить</span>
+            </button>
         </form>
     </div>
 </body>

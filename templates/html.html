@@ -5,26 +5,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Интернет Зоомагазин</title>
         <link rel="stylesheet" href="../static/static/css.css">
-        
-        
     </head>
     <body>
         <div class="ai-button" onclick="toggleChat()">AI</div>
-      <div class="chat-container">
-                <button class="chat-toggle" onclick="toggleChat()">AI</button>
-                
-                <div id="chatBox" class="chat-box">
-                    <div class="chat-header">
-                        <h2>Чат с ИИ-ассистентом</h2>
-                        <button onclick="toggleChat()">✕</button>
-                    </div>
-                    <div id="chatBody" class="chat-body"></div>
-                    <div class="chat-footer">
-                        <input id="chatInput" type="text" placeholder="Введите сообщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
-                        <button onclick="sendMessage()">Отправить</button>
-                    </div>
+        <div class="chat-container">
+            <button class="chat-toggle" onclick="toggleChat()">AI</button>
+            <div id="chatBox" class="chat-box">
+                <div class="chat-header">
+                    <h2>Чат с ИИ-ассистентом</h2>
+                    <button onclick="toggleChat()">✕</button>
+                </div>
+                <div id="chatBody" class="chat-body"></div>
+                <div class="chat-footer">
+                    <input id="chatInput" type="text" placeholder="Введите сообщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                    <button onclick="sendMessage()">Отправить</button>
                 </div>
             </div>
+        </div>
+
         <header>
             <div class="header-content">
                 <div class="logo-title">
@@ -53,103 +51,100 @@
                 </div>  
             </div>
         </header>
-        
+
         <main>
+            <!-- Сообщение о статусе платежа -->
+            {% if payment_status %}
+                <div class="alert alert-success">{{ payment_status }}</div>
+            {% endif %}
 
+            <section class="banner">
+                <div class="banner-img">
+                    <img src="../static/static/banner.png" alt="banner">
+                </div>
+            </section>
 
-                 <section class="banner ">
-                    <div class="banner-img">
-                        <img src="../static/static/banner.png" alt="banner">
+            <section class="orange-separator" id="categories"></section>
+            <section class="categories">
+                {% for item in postgres_data %}
+                    <div class="category-item">
+                        <a href="/products?category_id={{ item.category_id }}">
+                            <img src="{{ item.map }}" alt="{{ item.name }}">
+                            <p>{{ item.name }}</p>
+                        </a>
                     </div>
-                 </section>
+                {% else %}
+                    <p>Категории не найдены</p>
+                {% endfor %}
+            </section>
 
-
-                 <section class="orange-separator" id="categories"></section>    
-                 <section class="categories">
-                    {% for item in postgres_data %}
-                        <div class="category-item">
-                            <a href="/products?category_id={{ item.category_id }}">
-                                <img src="{{ item.map }}" alt="{{ item.name }}">
-                                <p>{{ item.name }}</p>
-                            </a>
-                        </div>
-                    {% else %}
-                        <p>Категории не найдены</p>
-                    {% endfor %}
-                </section>
-
-           
-                <section id="suppliers"></section>
-                    <section class="suppliers" >
-                        <div class="supplier">
-                            <div class="supplier-circle">
-                                <img src="../static/static/sup1.png" alt="sup1 Logo">
-                            </div>
-                            <h3>Sup1</h3>
-                            <p>Оценка: ☆☆☆☆</p>
-                        </div>
-                        <div class="supplier">
-                            <div class="supplier-circle">
-                                <img src="../static/static/sup2.png" alt="sup2 Logo">
-                            </div>
-                            <h3>Car` Zverey</h3>
-                            <p>Оценка: ☆☆☆☆☆</p>
-                        </div>
-                        <div class="supplier">
-                            <div class="supplier-circle">
-                                <img src="../static/static/sup3.png" alt="sup3 Logo">
-                            </div>
-                            <h3>AmanMisik</h3>
-                            <p>Оценка: ☆☆☆☆</p>
-                        </div>
-                     </section>
-
-          
+            <section id="suppliers"></section>
+            <section class="suppliers">
+                <div class="supplier">
+                    <div class="supplier-circle">
+                        <img src="../static/static/sup1.png" alt="sup1 Logo">
+                    </div>
+                    <h3>Sup1</h3>
+                    <p>Оценка: ☆☆☆☆</p>
+                </div>
+                <div class="supplier">
+                    <div class="supplier-circle">
+                        <img src="../static/static/sup2.png" alt="sup2 Logo">
+                    </div>
+                    <h3>Car` Zverey</h3>
+                    <p>Оценка: ☆☆☆☆☆</p>
+                </div>
+                <div class="supplier">
+                    <div class="supplier-circle">
+                        <img src="../static/static/sup3.png" alt="sup3 Logo">
+                    </div>
+                    <h3>AmanMisik</h3>
+                    <p>Оценка: ☆☆☆☆</p>
+                </div>
+            </section>
         </main>
+
         <section id="footer">
             <footer>
-            
                 <div class="footer-content">
-                <div class="footer-section">
-                    <h3>О нас</h3>
-                    <p>Интернет Зоомагазин LAPKA - ваш надежный поставщик товаров для питомцев.</p>
+                    <div class="footer-section">
+                        <h3>О нас</h3>
+                        <p>Интернет Зоомагазин LAPKA - ваш надежный поставщик товаров для питомцев.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Контакты</h3>
+                        <p>Телефон: +7 771 525 10 40</p>
+                        <p>Email:lapkazoo@gmail.com</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Следите за нами</h3>
+                        <p><a href="#">Instagram</a></p>
+                    </div>
                 </div>
-                <div class="footer-section">
-                    <h3>Контакты</h3>
-                    <p>Телефон: +7 771 525 10 40</p>
-                    <p>Email:lapkazoo@gmail.com</p>
+                <div class="footer-bottom">
+                    <p>© 2024 Интернет Магазин LAPKA, Все права защищены</p>
                 </div>
-                <div class="footer-section">
-                    <h3>Следите за нами</h3>
-                    <p><a href="#">Instagram</a></p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2024 Интернет Магазин LAPKA, Все права защищены</p>
-            </div>
-        </footer>
+            </footer>
         </section>
+
         <script>
             function toggleChat() {
                 const chatBox = document.getElementById("chatBox");
                 chatBox.style.display = (chatBox.style.display === "none" || chatBox.style.display === "") ? "flex" : "none";
             }
-        
+
             function sendMessage() {
                 const chatBody = document.getElementById("chatBody");
                 const chatInput = document.getElementById("chatInput");
                 const message = chatInput.value.trim();
-        
+
                 if (message) {
-                    // Отображаем сообщение пользователя
                     appendMessage("Вы", message, "user-message");
-        
-                    chatInput.value = "";  // Очищаем поле ввода
-        
-                    // Отображаем индикатор загрузки
+
+                    chatInput.value = "";
+
                     const loadingId = appendMessage("AI", "Печатает...", "ai-message");
-        
-                    // Отправляем сообщение на сервер
+
                     fetch("/chat", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -162,23 +157,17 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Удаляем индикатор загрузки
                         removeMessage(loadingId);
-        
-                        // Отображаем ответ AI
                         appendMessage("AI", data.reply, "ai-message");
                     })
                     .catch(error => {
                         console.error("Ошибка:", error);
-                        // Удаляем индикатор загрузки
                         removeMessage(loadingId);
-        
-                        // Отображаем сообщение об ошибке
                         appendMessage("AI", "Произошла ошибка при обработке запроса. Пожалуйста, попробуйте еще раз.", "ai-message error");
                     });
                 }
             }
-        
+
             function appendMessage(sender, text, className) {
                 const chatBody = document.getElementById("chatBody");
                 const messageElement = document.createElement("div");
@@ -186,15 +175,15 @@
                 messageElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
                 chatBody.appendChild(messageElement);
                 chatBody.scrollTop = chatBody.scrollHeight;
-                return messageElement.id = `msg-${Date.now()}`;  // Возвращаем ID сообщения
+                return messageElement.id = `msg-${Date.now()}`;
             }
-        
+
             function removeMessage(id) {
                 const message = document.getElementById(id);
                 if (message) {
                     message.remove();
                 }
             }
-            </script>
+        </script>
     </body>
 </html>
