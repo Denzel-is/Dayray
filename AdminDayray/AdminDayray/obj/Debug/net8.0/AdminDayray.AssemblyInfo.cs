@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AdminDayray")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0206e5854ae664d0ec215c58da284c4a9b3a2930")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+120d8338940ffd3a6e5963e4ec2390aa51f666ac")]
 [assembly: System.Reflection.AssemblyProductAttribute("AdminDayray")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AdminDayray")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -9,7 +9,7 @@
 <body>
     <div class="login-container">
         <h1>Войти</h1>
-        <form action="{{ url_for('auth.login') }}" method="POST">
+        <form id="login-form">
             <div class="form-group">
                 <label for="username">Имя пользователя:</label>
                 <input type="text" id="username" name="username" required>
@@ -19,8 +19,61 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Войти</button>
-          <a href="/register" class="button-reg">Регистрация</a>
+            <a href="/register" class="button-reg">Регистрация</a>
         </form>
+        <p id="error-message" class="error-message" style="display:none;">Неверный логин или пароль</p>
     </div>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const credentials = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+
+            try {
+                const response = await fetch('http://localhost:5107/api/Account/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(credentials)
+                });
+
+                if (!response.ok) {
+                    // Если сервер возвращает ошибку, показываем сообщение
+                    throw new Error('Неверный логин или пароль');
+                }
+
+                const data = await response.json();
+                
+                console.log('Server response:', data); // Для отладки
+                console.log('username', credentials.username); // Для отладки
+                console.log('id',data.Id); // Для отладки
+                    
+                // Проверка на наличие токена в ответе
+                if (data.token) {
+                    // Сохраняем токен и имя пользователя в localStorage для использования в последующих запросах
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', credentials.username); // Сохраняем имя пользователя
+
+                    // Перенаправляем на главную страницу после успешного входа
+               //    window.location.href = '/';
+                } else {
+                    throw new Error('Токен не получен');
+                }
+
+            } catch (err) {
+                errorMessage.style.display = 'block';
+                console.error('Login error:', err);
+            }
+        });
+    </script>
 </body>
 </html>

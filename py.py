@@ -7,7 +7,7 @@ from feedback import feedback_bp
 from pay import pay_bp
 from models import db, Category, Product, Reg
 from flask_migrate import Migrate
-from ai import ai_bp
+#from ai import ai_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -21,7 +21,7 @@ app.register_blueprint(products_bp)
 app.register_blueprint(cart_bp)
 app.register_blueprint(feedback_bp)
 app.register_blueprint(pay_bp, url_prefix='/payments')
-app.register_blueprint(ai_bp)
+#app.register_blueprint(ai_bp)
 
 # Главная страница
 @app.route('/')

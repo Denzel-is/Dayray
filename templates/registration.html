@@ -9,7 +9,7 @@
 <body>
     <div class="registration-container">
         <h1>Регистрация</h1>
-        <form action="{{ url_for('auth.register') }}" method="post">
+        <form id="registration-form">
             <div class="form-group">
                 <label for="username">Имя пользователя:</label>
                 <input type="text" id="username" name="username" required>
@@ -44,7 +44,60 @@
             </div>
             <button type="submit">Зарегистрироваться</button>
         </form>
+        <p id="error-message" class="error-message" style="display:none;">Ошибка регистрации. Пожалуйста, попробуйте снова.</p>
+        <p id="success-message" class="success-message" style="display:none;">Регистрация успешна! Вы будете перенаправлены...</p>
     </div>
-    <script src="js.js"></script>
+
+    <script>
+        const form = document.getElementById('registration-form');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const user = {
+                username: formData.get('username'),
+                phoneNumber: formData.get('phone-number'),
+                city: formData.get('city'),
+                address: formData.get('address'),
+                firstName: formData.get('first-name'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                confirmPassword: formData.get('confirm-password')
+            };
+
+            // Проверяем совпадение паролей
+            if (user.password !== user.confirmPassword) {
+                alert('Пароли не совпадают!');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5107/api/Account/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(user)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = '/login';  // Перенаправляем на страницу логина
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Ошибка регистрации');
+                }
+            } catch (err) {
+                errorMessage.style.display = 'block';
+                console.error('Error:', err);
+            }
+        });
+    </script>
 </body>
 </html>

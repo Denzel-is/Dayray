@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <link rel="stylesheet" href="../static/static/prod.css">
-    <title>{{ product_name }}</title> <!-- Используйте product_name -->
+    <title id="product-title"></title> <!-- Динамически изменяем заголовок -->
 </head>
 <body>
     <header>
@@ -10,29 +10,118 @@
         <a href="{{ url_for('mainp') }}" class="header-button">Главная</a>
         <a href="/cart" class="cart-link"><img src="../static/static/cart.png" alt="Cart"> Корзина</a>
     </header>
-    <div class="product-details-container">
-        <h1 class="product-title">{{ product_name }}</h1> <!-- Используйте product_name -->
-
-        <div class="product-image">
-           <img src="/{{ product_image_url }}" alt="{{ product_name }}"> 
-          
-        </div>
-       
-        <p class="product-description">{{ product_description }}</p> <!-- Используйте product_description -->
-        <p class="product-price">Цена: {{ product_price }} тг.</p> <!-- Используйте product_price -->
-        <p class="product-stock">В наличии: {{ product_stock }} шт.</p> <!-- Используйте product_stock -->
-
-        <a href="/" class="back-button">Назад к списку продуктов</a>
-        <form action="{{ url_for('cart.add_to_cart') }}" method="post"onsubmit="return addToCartAlert()">
-            <input type="hidden" name="product_id" value="{{ product_id }}"> <!-- Используйте product_id -->
-            <button type="submit">Добавить в корзину</button>
-        </form>
+    <div class="product-details-container" id="product-details-container">
+        <!-- Данные продукта будут загружены сюда с помощью JavaScript -->
     </div>
+
+    <!-- Форма для оставления отзыва -->
+    <div class="feedback-container">
+        <h2>Оставить отзыв</h2>
+        <form id="feedback-form" onsubmit="submitFeedback(event)">
+            <label for="rating">Оценка:</label>
+            <select id="rating" name="rating" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            
+            <label for="comment">Комментарий:</label>
+            <textarea id="comment" name="comment" required></textarea>
+            
+            <button type="submit">Отправить отзыв</button>
+        </form>
+        <p id="feedback-message"></p>
+    </div>
+
     <script>
-    function addToCartAlert() {
-        alert('Продукт успешно добавлен в корзину!');
-        return true; // Возвращаем true для продолжения отправки формы
-    }
-</script>
+        // Получаем ID продукта из URL
+        const pathSegments = window.location.pathname.split('/');
+        const productId = pathSegments[pathSegments.length - 1]; // Последний сегмент пути - это ID продукта
+
+        // Функция для загрузки данных о продукте
+        async function loadProduct() {
+            try {
+                const response = await fetch(`http://localhost:5107/api/Products/${productId}`);
+                if (!response.ok) {
+                    throw new Error('Продукт не найден');
+                }
+
+                const product = await response.json();
+
+                // Обновляем страницу с данными о продукте
+                document.getElementById('product-title').innerText = product.name;
+
+                const productDetailsContainer = document.getElementById('product-details-container');
+                productDetailsContainer.innerHTML = `
+                    <h1 class="product-title">${product.name}</h1>
+                    <div class="product-image">
+                        <img src="${product.imageUrl}" alt="${product.name}">
+                    </div>
+                    <p class="product-description">${product.description}</p>
+                    <p class="product-price">Цена: ${product.price} тг.</p>
+                    <p class="product-stock">В наличии: ${product.count} шт.</p>
+
+                    <a href="/" class="back-button">Назад к списку продуктов</a>
+                    <form action="{{ url_for('cart.add_to_cart') }}" method="post" onsubmit="return addToCartAlert()">
+                        <input type="hidden" name="product_id" value="${product.id}">
+                        <button type="submit">Добавить в корзину</button>
+                    </form>
+                `;
+            } catch (error) {
+                console.error('Ошибка при загрузке продукта:', error);
+                document.getElementById('product-details-container').innerHTML = `<p>Ошибка при загрузке данных о продукте. Попробуйте снова позже.</p>`;
+            }
+        }
+
+        // Функция для показа уведомления об успешном добавлении в корзину
+        function addToCartAlert() {
+            alert('Продукт успешно добавлен в корзину!');
+            return true; // Возвращаем true для продолжения отправки формы
+        }
+
+        // Функция для отправки отзыва
+        async function submitFeedback(event) {
+            event.preventDefault();
+
+            const rating = document.getElementById('rating').value;
+            const comment = document.getElementById('comment').value;
+
+            // Замените userId на актуальный ID пользователя
+            const userId = 1; // Например, это ID текущего пользователя
+
+            const feedbackData = {
+                productId: productId,
+                rating: rating,
+                comment: comment,
+                userId: userId
+            };
+
+            try {
+                const response = await fetch('http://localhost:5107/api/Feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(feedbackData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка при отправке отзыва');
+                }
+
+                const result = await response.json();
+                document.getElementById('feedback-message').innerText = 'Отзыв успешно отправлен!';
+                document.getElementById('feedback-form').reset();
+            } catch (error) {
+                console.error('Ошибка при отправке отзыва:', error);
+                document.getElementById('feedback-message').innerText = 'Произошла ошибка при отправке отзыва. Попробуйте снова позже.';
+            }
+        }
+
+        // Загружаем продукт при загрузке страницы
+        loadProduct();
+    </script>
 </body>
 </html>

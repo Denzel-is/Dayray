@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -14,23 +13,53 @@
         </form>
     </header>
    
-    <div class="product-container">
-<a href="../static/static/"></a>
-        {% for product in postgres_data %}
-            <div class="product">
-                <a href="/product/{{ product.product_id }}">
-                    <div class="product-title">{{ product.name }}</div>
-                    <div class="product-image">
-                        <img src="{{ product.map_p }}" alt="{{ product.name }}">
-                    </div>
-                    <div class="product-description">{{ product.description }}</div>
-                    <div class="product-price">{{ product.price }} тг.</div>
-                    <div class="product-stock">В наличии: {{ product.stock_quantity }} шт.</div>
-                </a>
-                
-            </div>
-        {% endfor %}
+    <div class="product-container" id="productContainer">
+        <!-- Продукты будут загружаться сюда -->
     </div>
+
+    <script>
+        // Получаем ID категории из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryId = urlParams.get('categoryId');
+
+        // Функция для загрузки продуктов по категории
+        function loadProductsByCategory() {
+            fetch(`http://localhost:5107/api/Products?categoryId=${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const productContainer = document.getElementById('productContainer');
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        productContainer.innerHTML = ''; // Очистка контейнера перед добавлением новых продуктов
+                        
+                        data.forEach(product => {
+                            const productElement = document.createElement('div');
+                            productElement.classList.add('product');
+                            productElement.innerHTML = `
+                                <a href="/product/${product.id}">
+                                    <div class="product-title">${product.name}</div>
+                                    <div class="product-image">
+                                        <img src="${product.imageUrl}" alt="${product.name}">
+                                    </div>
+                                    <div class="product-description">${product.description}</div>
+                                    <div class="product-price">${product.price} тг.</div>
+                                    <div class="product-stock">В наличии: ${product.count} шт.</div>
+                                </a>
+                            `;
+                            productContainer.appendChild(productElement);
+                        });
+                    } else {
+                        productContainer.innerHTML = '<p>Продукты не найдены в этой категории.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке продуктов:', error);
+                    const productContainer = document.getElementById('productContainer');
+                    productContainer.innerHTML = '<p>Произошла ошибка при загрузке продуктов.</p>';
+                });
+        }
+
+        // Загружаем продукты при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadProductsByCategory);
+    </script>
 </body>
 </html>
-<a href="..//static/static/cart.png"></a>
