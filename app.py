@@ -4,6 +4,7 @@ from login import login_bp
 from product_detail import product_detail_bp
 from cart import cart_bp
 from pay import pay_bp
+from ai import ai_bp
 import requests
 from config import Config
 from registration import registration_bp  # Импорт Blueprint
@@ -19,6 +20,7 @@ app.register_blueprint(registration_bp)
 app.register_blueprint(product_detail_bp)
 app.register_blueprint(cart_bp)
 app.register_blueprint(pay_bp)
+app.register_blueprint(ai_bp)
 
 
 @app.route('/')
