@@ -1,138 +1,77 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
-from models import db, Order, PaymentMethod
-from datetime import datetime
-from cart import get_cart_data
-from cart import remove_from_cart_db  
-from models import Cart, Product, db  # Предполагается, что Product - это модель для таблицы products
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify,session
+import requests
 
 pay_bp = Blueprint('pay', __name__)
 
-@pay_bp.route('/pay', methods=['GET', 'POST'])
-def pay():
-    print("Получен запрос", request.method)
-    user_id = session.get('customer_id')
-    print("user_id : ", user_id)
+API_PAYMENT_URL = "http://localhost:5107/api/payment"
 
-    # Получаем данные из корзины
-    cart_data = get_cart_data(user_id)
-    print("cart_data : ", cart_data)
-    total = sum(item['price'] * item['quantity'] for item in cart_data)
-    print("total : ", total)
-
-    if request.method == 'POST':
-        # Проверка данных
-        if not user_id:
-            print("Ошибка: пользователь не найден!")
-            return "Ошибка: пользователь не найден!", 400
-        
-        if total <= 0:
-            print("Ошибка: некорректная сумма заказа!")
-            return "Ошибка: некорректная сумма заказа!", 400
-
-        # Создание нового заказа
-        new_order = Order(
-            customer_id=user_id,
-            total_amount=total,
-            status='Pending',
-            order_date=datetime.now()
-        )
-        try:
-            db.session.add(new_order)
-            db.session.commit()
-            print(f"Заказ успешно добавлен, order_id: {new_order.order_id}")
-        except Exception as e:
-            db.session.rollback()
-            print(f"Ошибка при добавлении заказа: {e}")
-            return f"Ошибка при создании заказа: {e}", 500
-
-        # Сохраняем order_id и total в сессии
-        session['order_id'] = new_order.order_id
-        session['total'] = total
-
-        # Перенаправляем на страницу для обработки платежа
-        return redirect(url_for('pay.process_payment'))
-    
-    # При GET запросе `order_id` отсутствует
-    return render_template('pay.html', cart_data=cart_data, total=total, order_id=None)
-
-@pay_bp.route('/process_payment', methods=['GET', 'POST'])
+@pay_bp.route('/payment', methods=['GET', 'POST'])
 def process_payment():
-    user_id = session.get('customer_id')
-    if not user_id:
-        return redirect(url_for('auth.login'))
+    if request.method == 'GET':
+        # Параметры: ID заказа и сумма
+        order_id = request.args.get('order_id', default=0, type=int)
+        total = request.args.get('total', default=0.0, type=float)
 
-    # Получаем данные из сессии
-    order_id = session.get('order_id')
-    total = session.get('total')
+        # Проверка, если order_id или total равны нулю
+        if order_id == 0 or total == 0.0:
+            return "Ошибка: неверные данные о заказе", 400
 
-    if not order_id or not total:
-        print(f"Ошибка: отсутствуют обязательные параметры. order_id={order_id}, total={total}")
-        return "Ошибка: order_id или total не переданы!", 400
+        # Передаем данные в шаблон для рендеринга
+        return render_template('pay.html', order_id=order_id, total=total)
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
+        # Получаем данные из формы
+        order_id = request.form.get('order_id')
+        total = request.form.get('total')
         address = request.form.get('address')
         card_name = request.form.get('card_name')
         card_number = request.form.get('card_number')
         card_expiry = request.form.get('card_expiry')
         card_cvv = request.form.get('card_cvv')
+        print(f"PayData: {total}")
 
-        print(f"Получены данные для обработки платежа: order_id={order_id}, total={total}")
-        
+        # Проверка, что все обязательные поля заполнены
+        if not order_id or not total or not address or not card_name or not card_number or not card_expiry or not card_cvv:
+            return "Ошибка: все поля должны быть заполнены", 400
+
+        # Формируем JSON-данные для API
         try:
-            # Проверяем, существует ли активный заказ
-            active_order = Order.query.filter_by(order_id=order_id, customer_id=user_id, status='Pending').first()
-            if not active_order:
-                print(f"Ошибка: активный заказ с order_id={order_id} не найден!")
-                return "Активный заказ не найден", 400
+            payment_data = {
+                "orderId": int(order_id),
+                "amount": float(total),
+                "address": address,
+                "cardName": card_name,
+                "cardNumber": card_number,
+                "cardExpiry": card_expiry,
+                "cardCVV": card_cvv
+            }
+        except ValueError:
+            return "Ошибка: неверный формат данных", 400
 
-            # Обработка срока действия карты
-            expiry_parts = card_expiry.split('/')
-            if len(expiry_parts) != 2 or not all(part.isdigit() for part in expiry_parts):
-                return "Ошибка: некорректный формат срока действия карты!", 400
-            
-            expiry_date = datetime(int('20' + expiry_parts[1]), int(expiry_parts[0]), 1)
+        try:
+            # Отправляем POST-запрос к API платежей
+            response = requests.post(f"{API_PAYMENT_URL}/process-payment", json=payment_data)
 
-            # Сохранение метода оплаты
-            new_payment_method = PaymentMethod(
-                customer_id=user_id,
-                card_holder_name=card_name,
-                card_number=card_number,
-                card_expiry_date=expiry_date,
-                card_cvv=card_cvv,
-                address=address
-            )
-            db.session.add(new_payment_method)
+            # Проверяем статус ответа
+            response.raise_for_status()
+            payment_response = response.json()
 
-            # Обновляем статус заказа
-            active_order.status = 'Paid'
-            db.session.commit()
-            
-            print(f"Платеж успешно обработан. order_id={order_id}")
-            # Очистить данные в сессии
-            session.pop('order_id', None)
-            session.pop('total', None)
+            # Обрабатываем успешный платеж
+            payment_id = payment_response.get("payment_id") if isinstance(payment_response, dict) else payment_response
+            if payment_id:
+                session.pop('cart', None)
+                return redirect(url_for('pay.success', payment_id=payment_id))
+            else:
+                return "Ошибка: не удалось получить ID платежа", 500
 
-            return redirect(url_for('pay.success'))
-        
-        except Exception as e:
+        except requests.RequestException as e:
             print(f"Ошибка при обработке платежа: {e}")
-            db.session.rollback()
-            return f"Ошибка при обработке платежа: {e}", 500
-
-    return render_template('pay.html')
+            return "Ошибка при обработке платежа", 500
 
 @pay_bp.route('/success')
 def success():
-    # Получаем customer_id из сессии (или откуда-то еще, если это необходимо)
-    customer_id = session.get('customer_id')  # Предполагаем, что customer_id хранится в сессии
+    payment_id = request.args.get('payment_id')
+    if not payment_id:
+        return "Ошибка: ID платежа не найден", 400
+    return render_template('success.html', payment_id=payment_id)
 
-    if customer_id:
-        # Получаем список товаров из корзины, хранящейся в сессии
-        Cart.query.filter_by(customer_id=customer_id).delete()
-        db.session.commit()
-        db.session.rollback()
-    # Устанавливаем статус платежа в сессии
-    session['payment_status'] = 'Платеж успешно обработан!'
-
-    # Перенаправление на главную страницу
-    return redirect(url_for('mainp'))

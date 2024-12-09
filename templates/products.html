@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="stylesheet" href="../static/static/css1.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Продукты для кошек</title>
+    <link rel="stylesheet" href="../static/static/css1.css">
 </head>
 <body>
     <header>
@@ -12,54 +14,25 @@
             <button type="submit">Поиск</button>
         </form>
     </header>
-   
-    <div class="product-container" id="productContainer">
-        <!-- Продукты будут загружаться сюда -->
+
+    <div class="product-container">
+        {% if products %}
+            {% for product in products %}
+                <div class="product">
+                    <a href="/product/{{ product.id }}">
+                        <div class="product-title">{{ product.name }}</div>
+                        <div class="product-image">
+                            <img src="{{ product.imageUrl }}" alt="{{ product.name }}">
+                        </div>
+                        <div class="product-description">{{ product.description }}</div>
+                        <div class="product-price">{{ product.price }} тг.</div>
+                        <div class="product-stock">В наличии: {{ product.count }} шт.</div>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Продукты не найдены.</p>
+        {% endif %}
     </div>
-
-    <script>
-        // Получаем ID категории из URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryId = urlParams.get('categoryId');
-
-        // Функция для загрузки продуктов по категории
-        function loadProductsByCategory() {
-            fetch(`http://localhost:5107/api/Products?categoryId=${categoryId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const productContainer = document.getElementById('productContainer');
-                    if (data && Array.isArray(data) && data.length > 0) {
-                        productContainer.innerHTML = ''; // Очистка контейнера перед добавлением новых продуктов
-                        
-                        data.forEach(product => {
-                            const productElement = document.createElement('div');
-                            productElement.classList.add('product');
-                            productElement.innerHTML = `
-                                <a href="/product/${product.id}">
-                                    <div class="product-title">${product.name}</div>
-                                    <div class="product-image">
-                                        <img src="${product.imageUrl}" alt="${product.name}">
-                                    </div>
-                                    <div class="product-description">${product.description}</div>
-                                    <div class="product-price">${product.price} тг.</div>
-                                    <div class="product-stock">В наличии: ${product.count} шт.</div>
-                                </a>
-                            `;
-                            productContainer.appendChild(productElement);
-                        });
-                    } else {
-                        productContainer.innerHTML = '<p>Продукты не найдены в этой категории.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка при загрузке продуктов:', error);
-                    const productContainer = document.getElementById('productContainer');
-                    productContainer.innerHTML = '<p>Произошла ошибка при загрузке продуктов.</p>';
-                });
-        }
-
-        // Загружаем продукты при загрузке страницы
-        document.addEventListener('DOMContentLoaded', loadProductsByCategory);
-    </script>
 </body>
 </html>

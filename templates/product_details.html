@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="stylesheet" href="../static/static/prod.css">
+    <title>{{ product.name }}</title>
+</head>
+<body>
+    <header>
+        <a href="/" class="header-button">Назад</a>
+        <a href="{{ url_for('index') }}" class="header-button">Главная</a>
+        <a href="/cart" class="cart-link"><img src="../static/static/cart.png" alt="Cart"> Корзина</a>
+    </header>
+
+    <div class="product-details-container">
+        {% if product %}
+        <h1 class="product-title">{{ product.name }}</h1>
+        <div class="product-image">
+            <img src="{{ product.imageUrl }}" alt="{{ product.name }}">
+        </div>
+        <p class="product-description">{{ product.description }}</p>
+        <p class="product-price">Цена: {{ product.price }} тг.</p>
+        <p class="product-stock">В наличии: {{ product.count }} шт.</p>
+
+        <a href="/" class="back-button">Назад к списку продуктов</a>
+        <form action="{{ url_for('cart.add_to_cart') }}" method="post">
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            <label for="quantity">Количество:</label>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" required>
+            <button type="submit">Добавить в корзину</button>
+        </form>
+        {% else %}
+        <p>Ошибка при загрузке данных о продукте. Попробуйте позже.</p>
+        {% endif %}
+    </div>
+
+    <!-- Форма для оставления отзыва -->
+    <div class="feedback-container">
+        <h2>Оставить отзыв</h2>
+        <form action="{{ url_for('product_detail.product_details', id=product.id) }}" method="post">
+            <label for="rating">Оценка:</label>
+            <select id="rating" name="rating" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            
+            <label for="comment">Комментарий:</label>
+            <textarea id="comment" name="comment" required></textarea>
+            
+            <button type="submit">Отправить отзыв</button>
+        </form>
+
+        {% if feedback_message %}
+        <p>{{ feedback_message }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>

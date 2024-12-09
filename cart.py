@@ -1,137 +1,145 @@
-from flask import Blueprint, request, session, redirect, render_template,url_for
-from models import Cart, Product, db  # Предполагается, что Product - это модель для таблицы products
+from flask import Flask, Blueprint, render_template, request, jsonify, redirect, url_for, session
+import requests
 
+# Создание Blueprint для корзины
 cart_bp = Blueprint('cart', __name__)
+cart_bp.secret_key = 'YourSuperSecretKeyYourSuperSecretKeyYourSuperSecretKey'
+
+# Базовый URL вашего API
+API_BASE_URL = "http://localhost:5107/api/cart"
 
 
-def get_cart_data(user_id):
-    cart_items = Cart.query.filter_by(customer_id=user_id).all()
-    cart_data = []
-    for item in cart_items:
-        product = Product.query.get(item.product_id)
-        if product:
-            cart_data.append({
-                'product_id': item.product_id,
-                'name': product.name,
-                'price': product.price,
-                'quantity': item.quantity,
-                'map_p': product.map_p
-            })
-    return cart_data
+@cart_bp.route('/cart', methods=['GET'])
+def view_cart():
+    token = session.get('token')  # Токен для авторизации
+    if not token:
+        return redirect(url_for('login'))  # Перенаправляем на страницу логина, если токен отсутствует
 
-def clear_cart(user_id):
+    headers = {'Authorization': f'Bearer {token}'}
     try:
-        # Удаляем товары из корзины для текущего пользователя
-        Cart.query.filter_by(customer_id=user_id).delete()
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        print(f"Ошибка при очистке корзины: {e}")
-def add_to_cart_db(product_id, customer_id):
-    try:
-        cart_item = Cart.query.filter_by(product_id=product_id, customer_id=customer_id).first()
-        if cart_item:
-            cart_item.quantity += 1
-        else:
-            cart_item = Cart(product_id=product_id, customer_id=customer_id, quantity=1)
-            db.session.add(cart_item)
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        print(f"Ошибка в add_to_cart_db: {e}")
+        response = requests.get(API_BASE_URL, headers=headers)
+        response.raise_for_status()  # Проверяем статус ответа
+        cart_data = response.json()  # Парсим JSON-ответ
 
-def remove_from_cart_db(product_id, customer_id):
-    try:
-        # Удаление записи из таблицы корзины для конкретного пользователя и товара
-        Cart.query.filter_by(product_id=product_id, customer_id=customer_id).delete()
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        print(f"Ошибка при удалении товара из корзины: {e}")
+        # Логируем данные для проверки
+        print(cart_data)  # Это поможет увидеть структуру ответа
 
-def get_cart_data_from_db(cart_items):
-    cart_data = []
-    for product_id in cart_items:
-        product = Product.query.get(product_id)
-        if product:
-            cart_data.append({
-                'product_id': product_id,
-                'name': product.name,
-                'price': product.price,
-                'image_url': product.map_p.replace('./static/', '/static/')
-            })
-    return cart_data
+        # Переход к шаблону с корректными данными
+        cart_items = cart_data.get('cartItems', [])  # Получаем cartItems как список
+        total = sum(
+    (item.get('productPrice', 0) * item.get('quantity', 0))
+    for item in cart_items
+)
 
-@cart_bp.route('/update_quantity/<int:product_id>', methods=['POST'])
-def update_quantity(product_id):
-    customer_id = session.get('customer_id')
-    current_quantity = get_product_quantity_from_cart(product_id)
-    action = request.form.get('change')
+        return render_template('cart.html', cart_data=cart_items, total=total)
+    except requests.RequestException as e:
+        print(f"Ошибка получения корзины: {e}")
+        return "Ошибка загрузки корзины", 500
 
-    if action == 'increase':
-        new_quantity = current_quantity + 1
-    elif action == 'decrease' and current_quantity > 1:
-        new_quantity = current_quantity - 1
-    else:
-        new_quantity = current_quantity
 
-    update_cart_quantity(product_id, new_quantity, customer_id)
-    return redirect(url_for('cart.cart'))
 
-def get_product_quantity_from_cart(product_id):
-    cart_item = Cart.query.filter_by(product_id=product_id).first()
-    return cart_item.quantity if cart_item else 0 
-
-def update_cart_quantity(product_id, new_quantity, customer_id):
-    try:
-        cart_item = Cart.query.filter_by(product_id=product_id, customer_id=customer_id).first()
-        if cart_item:
-            cart_item.quantity = new_quantity
-            db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        print(f"Ошибка при обновлении количества товара в корзине: {e}")
-
-@cart_bp.route('/cart')
-def cart():
-    customer_id = session.get('customer_id')
-    cart_data = get_cart_data(customer_id)
-    total = sum(float(item['price']) * item['quantity'] for item in cart_data)
-    return render_template('cart.html', cart_data=cart_data, total=total)
-
+# Добавление товара в корзину
 @cart_bp.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
-    product_id = request.form.get('product_id')
-    if not product_id:
-        print("Ошибка: product_id не найден")
-        return redirect(request.referrer or '/')
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))
 
-    product_id = int(product_id)
-    print("СЕССИЯ",session.get('customer_id'))
-    customer_id = session.get('customer_id')  # Идентификатор пользователя
+    product_id = request.form.get('product_id')
+    quantity = request.form.get('quantity', 1)
+    headers = {'Authorization': f'Bearer {token}'}
+    params = {'productId': product_id, 'quantity': quantity}
 
     try:
-        add_to_cart_db(product_id, customer_id)
-    except Exception as e:
-        print(f"Ошибка при добавлении товара в корзину: {e}")
-        return redirect(request.referrer or '/')
+        response = requests.post(f"{API_BASE_URL}/add", headers=headers, params=params)
+        response.raise_for_status()
+        return redirect(url_for('cart.view_cart'))
+    except requests.RequestException as e:
+        print(f"Ошибка добавления в корзину: {e}")
+        return "Ошибка добавления в корзину", 500
 
-    session.modified = True
-    return redirect(request.referrer or '/')
-@cart_bp.route('/remove_from_cart/<int:product_id>', methods=['POST'])
-def remove_from_cart(product_id):
-    customer_id = session.get('customer_id')
-    if not customer_id:
-        return redirect(url_for('auth.login'))  # Перенаправление на страницу входа, если пользователь не авторизован
 
-    # Удалить товар из корзины текущего пользователя в базе данных
-    remove_from_cart_db(product_id, customer_id)
-    
-    # Обновить сессию, если корзина хранится и в сессии
-    cart = session.get('cart', [])
-    if product_id in cart:
-        cart.remove(product_id)
-        session['cart'] = cart
-        session.modified = True
+# Удаление товара из корзины
+@cart_bp.route('/remove_from_cart', methods=['POST'])
+def remove_from_cart():
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))
 
-    return redirect(url_for('cart.cart'))
+    product_id = request.form.get('product_id')
+
+    headers = {'Authorization': f'Bearer {token}'}
+    data = {'productId': product_id}
+
+    try:
+        response = requests.post(f"{API_BASE_URL}/remove", headers=headers, json=data)
+        response.raise_for_status()
+        return redirect(url_for('cart.view_cart'))
+    except requests.RequestException as e:
+        print(f"Ошибка удаления из корзины: {e}")
+        return "Ошибка удаления из корзины", 500
+
+
+# Очистка корзины
+@cart_bp.route('/clear_cart', methods=['POST'])
+def clear_cart():
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))
+
+    headers = {'Authorization': f'Bearer {token}'}
+    try:
+        response = requests.post(f"{API_BASE_URL}/clear", headers=headers)
+        response.raise_for_status()
+        return redirect(url_for('cart.view_cart'))
+    except requests.RequestException as e:
+        print(f"Ошибка очистки корзины: {e}")
+        return "Ошибка очистки корзины", 500
+
+
+@cart_bp.route('/checkout', methods=['POST'])
+def checkout():
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))  # Перенаправляем на логин, если токен отсутствует
+
+    headers = {'Authorization': f'Bearer {token}'}
+
+    try:
+        # Получаем данные корзины для создания заказа
+        response = requests.get(API_BASE_URL, headers=headers)
+        response.raise_for_status()
+        cart_data = response.json()
+
+        # Формируем данные для заказа
+        order_items = [
+            {
+                "productId": item["productId"],
+                "quantity": item["quantity"],
+                "price": item["productPrice"]
+            }
+            
+            for item in cart_data.get('cartItems', [])
+        ]
+        total = sum(
+            (item["productPrice"] * item["quantity"])
+            for item in cart_data.get('cartItems', [])
+        )
+        print(f"print(order_items){order_items}")
+
+        order_data = {
+            "userId": session.get("user_id"),  # Используем ID пользователя из сессии
+            "orderItems": order_items
+        }
+
+        # Отправляем запрос на API для создания заказа
+        order_response = requests.post("http://localhost:5107/api/Order/create-order", json=order_data)
+        order_response.raise_for_status()
+
+        # Получаем ID созданного заказа
+        order_id = order_response.json()
+        return render_template('pay.html', order_id=order_id, total=total)
+
+    except requests.RequestException as e:
+        print(f"Ошибка при создании заказа: {e}")
+        return "Ошибка при создании заказа", 500
