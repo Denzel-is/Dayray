@@ -29,7 +29,7 @@ def login():
                 session['username'] = username
                 session['token'] = response.json().get('token')
                 session['user_id'] = response.json().get('userId')  # Сохраняем userId
-
+                print(f"session['user_id'] {session['user_id']}")
                 # Возвращаем ответ с токеном и именем пользователя
                 return jsonify({'token': session['token'], 'username': session['username']})
 
@@ -41,7 +41,7 @@ def login():
 
 @login_bp.route('/logout')
 def logout():
-    session.pop('user_id', None)    
+
+    session.pop('username', None)    
     session.pop('customer_id', None)
-    session.pop('cart', None)
     return redirect('/')

@@ -4,6 +4,7 @@ import requests
 pay_bp = Blueprint('pay', __name__)
 
 API_PAYMENT_URL = "http://localhost:5107/api/payment"
+API_CART_URL = "http://localhost:5107/api/cart/clear"  # URL для очистки корзины
 
 @pay_bp.route('/payment', methods=['GET', 'POST'])
 def process_payment():
@@ -58,7 +59,15 @@ def process_payment():
 
             # Обрабатываем успешный платеж
             payment_id = payment_response.get("payment_id") if isinstance(payment_response, dict) else payment_response
+            token = session.get('token')  # Токен для авторизации
+        
+            headers = {'Authorization': f'Bearer {token}'}
+            
             if payment_id:
+                userId = session.get('token')
+              
+                cart_clear_response = requests.post(f"{API_CART_URL}", headers=headers)
+                cart_clear_response.raise_for_status()
                 session.pop('cart', None)
                 return redirect(url_for('pay.success', payment_id=payment_id))
             else:
