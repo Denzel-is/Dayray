@@ -12,24 +12,26 @@ def process_payment():
         # Параметры: ID заказа и сумма
         order_id = request.args.get('order_id', default=0, type=int)
         total = request.args.get('total', default=0.0, type=float)
+        quantity = request.args.get('quantity', default=0.0, type=float)
 
         # Проверка, если order_id или total равны нулю
         if order_id == 0 or total == 0.0:
             return "Ошибка: неверные данные о заказе", 400
 
         # Передаем данные в шаблон для рендеринга
-        return render_template('pay.html', order_id=order_id, total=total)
+        return render_template('pay.html', order_id=order_id, total=total, quantity = quantity)
 
     elif request.method == 'POST':
         # Получаем данные из формы
         order_id = request.form.get('order_id')
         total = request.form.get('total')
+        quantity = request.form.get('quantity')
         address = request.form.get('address')
         card_name = request.form.get('card_name')
         card_number = request.form.get('card_number')
         card_expiry = request.form.get('card_expiry')
         card_cvv = request.form.get('card_cvv')
-        print(f"PayData: {total}")
+        print(f"PayData: {quantity}")
 
         # Проверка, что все обязательные поля заполнены
         if not order_id or not total or not address or not card_name or not card_number or not card_expiry or not card_cvv:
@@ -40,6 +42,7 @@ def process_payment():
             payment_data = {
                 "orderId": int(order_id),
                 "amount": float(total),
+                "quantity": int(quantity),
                 "address": address,
                 "cardName": card_name,
                 "cardNumber": card_number,

@@ -30,7 +30,6 @@ def view_cart():
     (item.get('productPrice', 0) * item.get('quantity', 0))
     for item in cart_items
 )
-
         return render_template('cart.html', cart_data=cart_items, total=total)
     except requests.RequestException as e:
         print(f"Ошибка получения корзины: {e}")
@@ -72,7 +71,7 @@ def remove_from_cart():
     data = {'productId': product_id}
 
     try:
-        response = requests.post(f"{API_BASE_URL}/remove", headers=headers, json=data)
+        response = requests.post(f"{API_BASE_URL}/clear", headers=headers)
         response.raise_for_status()
         return redirect(url_for('cart.view_cart'))
     except requests.RequestException as e:
@@ -131,14 +130,17 @@ def checkout():
             "userId": session.get("user_id"),  # Используем ID пользователя из сессии
             "orderItems": order_items
         }
+        quantity = sum((item["quantity"])for item in cart_data.get('cartItems', []))
+        print(f"quant : {quantity}")
 
+        
         # Отправляем запрос на API для создания заказа
         order_response = requests.post("http://localhost:5107/api/Order/create-order", json=order_data)
         order_response.raise_for_status()
 
         # Получаем ID созданного заказа
         order_id = order_response.json()
-        return render_template('pay.html', order_id=order_id, total=total)
+        return render_template('pay.html', order_id=order_id, total=total, quantity = quantity)
 
     except requests.RequestException as e:
         print(f"Ошибка при создании заказа: {e}")
