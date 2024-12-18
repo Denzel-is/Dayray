@@ -21,6 +21,16 @@ def product_details(id):
         error_message = "Не удалось загрузить данные о продукте. Попробуйте позже."
         return render_template('product_details.html', product=product, error_message=error_message)
 
+    # Запрос на получение отзывов о продукте
+    try:
+        feedback_response = requests.get(f"{FEEDBACK_API_URL}?productId={id}")
+        feedback_response.raise_for_status()
+        feedbacks = feedback_response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Ошибка при запросе отзывов: {e}")
+        feedbacks = []
+        error_message = "Не удалось загрузить отзывы о продукте."
+
     # Обработка отправки отзыва
     if request.method == 'POST':
         # Проверка на добавление отзыва
@@ -44,7 +54,22 @@ def product_details(id):
                 print(f"Ошибка при отправке отзыва: {e}")
                 feedback_message = "Произошла ошибка при отправке отзыва. Попробуйте снова позже."
 
-            return render_template('product_details.html', product=product, feedback_message=feedback_message)
+            # После добавления отзыва обновим список отзывов
+            try:
+                feedback_response = requests.get(f"{FEEDBACK_API_URL}?productId={id}")
+                feedback_response.raise_for_status()
+                feedbacks = feedback_response.json()
+                print(f"feed")
+            except requests.exceptions.RequestException as e:
+                print(f"Ошибка при повторном запросе отзывов: {e}")
+                feedbacks = []
+
+            return render_template(
+                'product_details.html',
+                product=product,
+                feedbacks=feedbacks,
+                feedback_message=feedback_message
+            )
 
         # Обработка отправки формы для добавления в корзину
         elif 'quantity' in request.form:
@@ -53,8 +78,13 @@ def product_details(id):
             # Проверяем, что количество не превышает доступное
             if quantity > product['count']:
                 error_message = f"Вы не можете выбрать больше {product['count']} товаров."
-                return render_template('product_details.html', product=product, error_message=error_message)
+                return render_template(
+                    'product_details.html',
+                    product=product,
+                    feedbacks=feedbacks,
+                    error_message=error_message
+                )
 
             # Здесь можно продолжить процесс добавления товара в корзину (например, через API или сессию)
 
-    return render_template('product_details.html', product=product)
+    return render_template('product_details.html', product=product, feedbacks=feedbacks)

@@ -10,10 +10,14 @@ def products():
     PRODUCTS_API_URL = API_URL + "/Products"
 
     query = request.args.get('query', '')  # Получаем параметр поиска из URL
-
+    category_id = request.args.get('categoryId', None) 
+    params = {"query": query}
+    if category_id:
+        params["categoryId"] = category_id
+    print(f"params{params}")
     # Добавляем параметр поиска в запрос к API
     try:
-        response = requests.get(PRODUCTS_API_URL, params={"query": query})
+        response = requests.get(PRODUCTS_API_URL, params=params)
         response.raise_for_status()
         products = response.json()
     except requests.exceptions.RequestException as e:
