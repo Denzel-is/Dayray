@@ -11,10 +11,10 @@ API_BASE_URL = "http://localhost:5107/api/cart"
 
 @cart_bp.route('/cart', methods=['GET'])
 def view_cart():
-    token = session.get('token')  # Токен для авторизации
+    token = session.get('token')
+    print(f"token : {token}")  # Токен для авторизации
     if not token:
         return redirect(url_for('login'))  # Перенаправляем на страницу логина, если токен отсутствует
-
     headers = {'Authorization': f'Bearer {token}'}
     try:
         response = requests.get(API_BASE_URL, headers=headers)
@@ -26,14 +26,12 @@ def view_cart():
 
         # Переход к шаблону с корректными данными
         cart_items = cart_data.get('cartItems', [])  # Получаем cartItems как список
-        total = sum(
-    (item.get('productPrice', 0) * item.get('quantity', 0))
-    for item in cart_items
-)
+        total = sum((item.get('productPrice', 0) * item.get('quantity', 0)) for item in cart_items)
+        
         return render_template('cart.html', cart_data=cart_items, total=total)
     except requests.RequestException as e:
         print(f"Ошибка получения корзины: {e}")
-        return "Ошибка загрузки корзины", 500
+        return render_template('cart.html')
 
 
 

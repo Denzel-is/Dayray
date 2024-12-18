@@ -1,7 +1,22 @@
-/* Стили для страницы "Войти" */
+:root {
+    --font-base: 'Inter', sans-serif;
+    --color-bg: #f9f9f9;
+    --color-text: #333;
+    --color-accent: #FF6B6B;
+    --color-border: #e0e0e0;
+    --color-primary: #ffffff;
+    --shadow-medium: 0 4px 15px rgba(0,0,0,0.08);
+    --radius-medium: 10px;
+    --font-weight-medium: 500;
+    --font-weight-semi: 600;
+    --font-weight-extra: 800;
+    --transition-fast: 0.3s ease;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: var(--font-base);
+    background: url("..//static/image2.png") no-repeat center center fixed;
+    background-size: cover;
     margin: 0;
     padding: 0;
     display: flex;
@@ -10,65 +25,97 @@ body {
     height: 100vh;
 }
 
+
 .login-container {
-    background-color: #fff;
-    width: 600px;
-    padding: 70px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    background-color: var(--color-primary);
+    width: 350px;
+    padding: 40px;
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-medium);
     text-align: center;
+    position: relative;
 }
 
-h1 {
-    color: #ff6600;
+.image-container {
+    text-align: center;
     margin-bottom: 20px;
+}
+
+.header-image {
+    max-width: 300px;
+    height: auto;
+    display: inline-block;
+}
+
+.login-container h1 {
+    color: var(--color-accent);
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    font-weight: var(--font-weight-extra);
 }
 
 .form-group {
     margin-bottom: 20px;
+    text-align: left;
 }
 
-label {
+.form-group label {
     display: block;
-    color: #333;
+    color: var(--color-text);
     margin-bottom: 5px;
+    font-weight: var(--font-weight-medium);
 }
 
-input[type="text"],
-input[type="password"] {
+.form-group input[type="text"],
+.form-group input[type="password"] {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+    font-size: 0.95rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 5px rgba(255,107,107,0.3);
+}
+
+.submit-button {
+    background-color: var(--color-accent);
+    color: #fff;
+    border: none;
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-medium);
+    font-weight: var(--font-weight-semi);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background var(--transition-fast);
     margin-top: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-.button-reg{
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s; 
-    text-decoration: none;
-    font-size: 13px;
 }
 
-
-button[type="submit"] {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.submit-button:hover {
+    background-color: #ff5a5a;
 }
 
-button[type="submit"]:hover {
-    background-color: #45a049;
+.reg-link {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    transition: color var(--transition-fast);
+    font-weight: var(--font-weight-medium);
 }
-.button-reg:hover {
-    background-color: #45a049;
+
+.reg-link:hover {
+    color: #ff5a5a;
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #ff0000;
+    margin-top: 20px;
+    font-weight: var(--font-weight-semi);
 }

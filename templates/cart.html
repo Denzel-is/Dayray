@@ -1,38 +1,89 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="stylesheet" href="../static/static/cart.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Корзина</title>
+    <link rel="stylesheet" href="../static/static/cart.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Основной шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Хедер с навбаром -->
     <header>
-        <a id="backButton" href="/">Назад</a>
-    </header>
-   
-    <div class="cart-title">
-        <h1>Корзина</h1>
-    </div>
-    <div class="cart-container">
-        {% for item in cart_data %}
-            <div class="cart-item">
-                <div class="cart-image">
-                    <!-- Displaying product image -->
-                    <img src="{{ item['productImageUrl'] }}" alt="{{ item['productName'] }}">
-                </div>
-                <p>{{ item['productName'] }}</p> <!-- Displaying product name -->
-                <p class="price">{{ item['productPrice'] }} тг.</p> <!-- Displaying product price -->
-                <p class="quantity">Количество: {{ item['quantity'] }}</p> <!-- Displaying quantity -->
-                <form action="{{ url_for('cart.remove_from_cart', product_id=item['productId']) }}" method="post">
-                    <button class="remove-item-button" type="submit">Удалить из корзины</button>
+        <div class="header-content">
+            <a href="/" class="logo-title">
+                <img src="../static/static/lapka.png" alt="LAPKA Logo">
+                <h1>LAPKA</h1>
+            </a>
+            <nav class="main-nav">
+                <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
+                <ul class="nav-list">
+                    <li><a href="/">Главная</a></li>
+                    <li><a href="#categories">Категории</a></li>
+                    <li><a href="#suppliers">Партнеры</a></li>
+                    <li><a href="#footer">Контакты</a></li>
+                    <!-- <li><a href="/feedback" class="abob">Отзывы</a></li> -->
+                </ul>
+            </nav>
+            <!-- <div class="search-container">
+                <form action="/search" method="get">
+                    <input type="text" name="q" placeholder="Поиск..." class="search-input">
+                    <button type="submit" class="search-button">Поиск</button>
                 </form>
+            </div> -->
+            <div class="auth-cart">
+                {% if 'username' in session %}
+                    <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
+                {% else %}
+                    <a href="/login" class="auth-link">Войти</a>
+                    <a href="/register" class="auth-link">Регистрация</a>
+                {% endif %}
+                <a href="/cart" class="cart-link">
+                    <img src="../static/static/cart.png" alt="Корзина"> Корзина
+                </a>
             </div>
+        </div>
+    </header>
+
+    <!-- Основное содержимое корзины -->
+    <main class="cart-container">
+        <h2 class="cart-main-title">Ваша корзина</h2>
+        {% for item in cart_data %}
+        <div class="cart-item">
+            <img src="{{ item['productImageUrl'] }}" alt="{{ item['productName'] }}" class="cart-image">
+            <div class="cart-details">
+                <h3>{{ item['productName'] }}</h3>
+                <p class="cart-price">{{ item['productPrice'] }} тг.</p>
+                <p class="cart-quantity">Количество: {{ item['quantity'] }}</p>
+            </div>
+            <form action="{{ url_for('cart.remove_from_cart', product_id=item['productId']) }}" method="post">
+                <button class="remove-button" type="submit">Удалить</button>
+            </form>
+        </div>
+        {% else %}
+        <p class="empty-cart">Ваша корзина пуста.</p>
         {% endfor %}
-        <div id="totalPrice">Общая стоимость: {{ total }} тг.</div> <!-- Total price -->
-    </div>
-    {% if cart_data %}
-    <form method="POST" action="{{ url_for('cart.checkout') }}">
-        <button class="checkout-button" type="submit">Перейти к оплате</button>
-    </form>
-{% endif %}
+
+        <!-- Итог и кнопка оплаты -->
+        {% if cart_data %}
+        <div class="cart-summary">
+            <p id="totalPrice">Общая стоимость: <span>{{ total }} тг.</span></p>
+            <form method="POST" action="{{ url_for('cart.checkout') }}">
+                <button class="checkout-button" type="submit">Перейти к оплате</button>
+            </form>
+        </div>
+        {% endif %}
+    </main>
+
+    <script>
+        // Тоггл навигационного меню на мобильных устройствах
+        function toggleMenu() {
+            const navList = document.querySelector('.nav-list');
+            navList.classList.toggle('open');
+        }
+    </script>
 </body>
 </html>

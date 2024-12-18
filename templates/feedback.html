@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- [head content] -->
-    <link rel="stylesheet" href="../static/static/feedback.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отзывы</title>
+    <link rel="stylesheet" href="../static/static/feedback.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -11,36 +13,30 @@
     </header>
     <main>
         <h1>Отзывы</h1>
-        <section>
-            <div class="feedback-form">
-                <form action="{{ url_for('feedback.submit_feedback') }}" method="post">
-                    <!-- <label for="name">Имя:</label>
-                    <input type="text" id="name" name="name" required> -->
-    
-                    <label for="feedback">Отзыв:</label>
-                    <textarea id="feedback" name="feedback" required></textarea>
-    
-                    <button type="submit">Отправить</button>
-                </form>
-            </div>
-           </section>
-            <section class="feedback-container">
-                <h2>Отзывы пользователей</h2>
-        
-                <ul class="feedback-list">
-                    {% for feedback in feedbacks %}
-                    <li>
-                        <p class="feedback-name">От: {{ feedback.cust_name }}</p>
-                        <p class="feedback-date">{{ feedback.feedback_date }}</p>
-                        <p class="feedback-text">{{ feedback.feedback_text }}</p>
-                    </li>
+        <section class="feedback-form">
+            <form action="{{ url_for('feedback.submit_feedback') }}" method="post">
+                <label for="feedback">Напишите ваш отзыв</label>
+                <textarea id="feedback" name="feedback" placeholder="Поделитесь своим мнением..." required></textarea>
+                <button type="submit">Отправить</button>
+            </form>
+        </section>
+
+        <section class="feedback-container">
+            <h2>Отзывы пользователей</h2>
+            <ul class="feedback-list">
+                {% for feedback in feedbacks %}
+                <li class="feedback-item">
+                    <div class="feedback-info">
+                        <span class="feedback-name">{{ feedback.cust_name }}</span>
+                        <span class="feedback-date">{{ feedback.feedback_date }}</span>
+                    </div>
+                    <p class="feedback-text">{{ feedback.feedback_text }}</p>
+                </li>
                 {% else %}
-                    <li>Пока нет отзывов.</li>
+                <li class="no-feedback">Пока нет отзывов.</li>
                 {% endfor %}
-                </ul>
-            </section>
-
+            </ul>
+        </section>
     </main>
-
 </body>
 </html>

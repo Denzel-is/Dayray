@@ -1,212 +1,224 @@
 <!DOCTYPE html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Интернет Зоомагазин</title>
-        <link rel="stylesheet" href="../static/static/css.css">
-    </head>
-    <body>
-        <div class="ai-button" onclick="toggleChat()">AI</div>
-        <div class="chat-container">
-            <button class="chat-toggle" onclick="toggleChat()">AI</button>
-            <div id="chatBox" class="chat-box">
-                <div class="chat-header">
-                    <h2>Чат с ИИ-ассистентом</h2>
-                    <button onclick="toggleChat()">✕</button>
-                </div>
-                <div id="chatBody" class="chat-body"></div>
-                <div class="chat-footer">
-                    <input id="chatInput" type="text" placeholder="Введите сообщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
-                    <button onclick="sendMessage()">Отправить</button>
-                </div>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <title>LAPKA - Интернет Зоомагазин</title>
+    <link rel="stylesheet" href="../static/static/css.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Используем современный, дружелюбный шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
+</head>
+<body>
+    <!-- Кнопка для чата -->
+    <div class="chat-container">
+        <button class="chat-toggle" onclick="toggleChat()" aria-label="Открыть чат поддержки">💬</button>
+        <div id="chatBox" class="chat-box">
+            <div class="chat-header">
+                <h2>Чат с ИИ-ассистентом</h2>
+                <button onclick="toggleChat()" aria-label="Закрыть чат">✕</button>
+            </div>
+            <div id="chatBody" class="chat-body"></div>
+            <div class="chat-footer">
+                <input id="chatInput" type="text" placeholder="Напишите сообщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                <button onclick="sendMessage()">Отправить</button>
             </div>
         </div>
+    </div>
 
-        <header>
-            <div class="header-content">
-                <div class="logo-title">
-                    <img src="../static/static/lapka.png" alt="Logo">
-                    <h1>LAPKA</h1>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="#top">Главная</a></li>
-                        <li><a href="#categories">Животные</a></li>
-                        <li><a href="#suppliers">Партнеры</a></li>
-                        <li><a href="#footer">Контакты</a></li>
-                        <a href="/feedback" class="abob">Отзывы</a>
-                    </ul>
-                </nav>
-                <div class="auth-cart">
-                    {% if 'username' in session %}
-                        <a href="{{ url_for('login.logout') }}" class="abob">Выход</a>
-                    {% else %}
-                        <a href="/login" class="abob">Войти</a>
-                        <a href="/register" class="abob">Регистрация</a>
-                    {% endif %}
-                    <a href="/cart" class="cart-link">
-                        <img src="../static/static/cart.png" alt="Cart"> Корзина
-                    </a>
-                </div>  
+    <!-- Хедер -->
+    <header>
+        <div class="header-content">
+            <a href="#top" class="logo-title">
+                <img src="../static/static/lapka.png" alt="LAPKA Logo">
+                <h1>LAPKA</h1>
+            </a>
+            <nav class="main-nav">
+                <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
+                <ul class="nav-list">
+                    <li><a href="#top">Главная</a></li>
+                    <li><a href="#categories">Категории</a></li>
+                    <li><a href="#suppliers">Партнеры</a></li>
+                    <li><a href="#footer">Контакты</a></li>
+                    <!-- <li><a href="/feedback" class="abob">Отзывы</a></li> -->
+                </ul>
+            </nav>
+            <div class="auth-cart">
+                {% if 'username' in session %}
+                    <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
+                {% else %}
+                    <a href="/login" class="auth-link">Войти</a>
+                    <a href="/register" class="auth-link">Регистрация</a>
+                {% endif %}
+                <a href="/cart" class="cart-link">
+                    <img src="../static/static/cart.png" alt="Корзина"> Корзина
+                </a>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <main>
-            <!-- Сообщение о статусе платежа -->
-            {% if payment_status %}
-                <div class="alert alert-success">{{ payment_status }}</div>
-            {% endif %}
+    <main>
+        {% if payment_status %}
+            <div class="alert alert-success">{{ payment_status }}</div>
+        {% endif %}
 
-            <section class="banner">
-                <div class="banner-img">
-                    <img src="../static/static/banner.png" alt="banner">
+        <!-- Баннер -->
+        <section class="banner" id="top">
+            <div class="banner-content">
+                <div class="banner-text">
+                    <h2>Добро пожаловать в LAPKA</h2>
+                    <p>Лучшие товары для ваших любимых питомцев. Корма, игрушки, аксессуары – всё, что нужно, уже здесь.</p>
+                    <a href="#categories" class="banner-button">Перейти к товарам</a>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section class="orange-separator" id="categories"></section>
-            <section class="categories">
+        <!-- Категории -->
+        <section class="section-wrapper" id="categories">
+            <h2 class="section-title">Категории</h2>
+            <p class="section-subtitle">Выберите категорию для вашего питомца</p>
+            <div class="categories">
                 {% if error %}
                     <p class="error">{{ error }}</p>
                 {% elif categories %}
                     {% for category in categories %}
                         <div class="category-item">
                             <a href="/products?categoryId={{ category.id }}">
-                                <img src="{{ category.imageUrl }}" alt="{{ category.name }}">
-                                <p>{{ category.name }}</p>
+                                <div class="category-image-container">
+                                    <img src="{{ category.imageUrl }}" alt="{{ category.name }}" class="category-img">
+                                </div>
+                                <p class="category-name">{{ category.name }}</p>
                             </a>
                         </div>
                     {% endfor %}
                 {% else %}
                     <p>Категории не найдены</p>
                 {% endif %}
-            </section>
+            </div>
+        </section>
 
-            <section id="suppliers"></section>
-            <section class="suppliers">
+        <!-- Поставщики -->
+        <section class="section-wrapper" id="suppliers">
+            <h2 class="section-title">Наши Партнеры</h2>
+            <p class="section-subtitle">Надежные производители и поставщики</p>
+            <div class="suppliers">
                 <div class="supplier">
                     <div class="supplier-circle">
                         <img src="../static/static/sup1.png" alt="sup1 Logo">
                     </div>
                     <h3>Sup1</h3>
-                    <p>Оценка: ☆☆☆☆</p>
+                    <p>Оценка: ★★★★☆</p>
                 </div>
-                <div class="supplier">
+                <div class="supplier highlight">
                     <div class="supplier-circle">
                         <img src="../static/static/sup2.png" alt="sup2 Logo">
                     </div>
                     <h3>Car` Zverey</h3>
-                    <p>Оценка: ☆☆☆☆☆</p>
+                    <p>Оценка: ★★★★★</p>
                 </div>
                 <div class="supplier">
                     <div class="supplier-circle">
                         <img src="../static/static/sup3.png" alt="sup3 Logo">
                     </div>
                     <h3>AmanMisik</h3>
-                    <p>Оценка: ☆☆☆☆</p>
+                    <p>Оценка: ★★★★☆</p>
                 </div>
-            </section>
-        </main>
-
-        <section id="footer">
-            <footer>
-                <div class="footer-content">
-                    <div class="footer-section">
-                        <h3>О нас</h3>
-                        <p>Интернет Зоомагазин LAPKA - ваш надежный поставщик товаров для питомцев.</p>
-                    </div>
-                    <div class="footer-section">
-                        <h3>Контакты</h3>
-                        <p>Телефон: +7 771 525 10 40</p>
-                        <p>Email:lapkazoo@gmail.com</p>
-                    </div>
-                    <div class="footer-section">
-                        <h3>Следите за нами</h3>
-                        <p><a href="#">Instagram</a></p>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <p>© 2024 Интернет Магазин LAPKA, Все права защищены</p>
-                </div>
-            </footer>
+            </div>
         </section>
+    </main>
 
-        <script>
-            function toggleChat() {
-                const chatBox = document.getElementById("chatBox");
-                chatBox.style.display = (chatBox.style.display === "none" || chatBox.style.display === "") ? "flex" : "none";
+    <!-- Футер -->
+    <footer id="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>О нас</h3>
+                <p>Интернет Зоомагазин LAPKA – ваш надежный поставщик товаров для питомцев. Мы стремимся обеспечить качественный сервис и широкий ассортимент для всех ваших любимцев.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p>Телефон: +7 771 525 10 40</p>
+                <p>Email: lapkazoo@gmail.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Следите за нами</h3>
+                <p><a href="#">Instagram</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 Интернет Магазин LAPKA, Все права защищены</p>
+        </div>
+    </footer>
+
+    <script>
+        // Функция для открытия/закрытия чата
+        function toggleChat() {
+            const chatBox = document.getElementById("chatBox");
+            chatBox.style.display = (chatBox.style.display === "none" || chatBox.style.display === "") ? "flex" : "none";
+        }
+
+        // Функция отправки сообщения
+        function sendMessage() {
+            const chatBody = document.getElementById("chatBody");
+            const chatInput = document.getElementById("chatInput");
+            const message = chatInput.value.trim();
+
+            if (message) {
+                const userMsgId = appendMessage("Вы", message, "user-message");
+                chatInput.value = "";
+
+                const loadingId = appendMessage("AI", "Печатает...", "ai-message");
+
+                fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: message })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    removeMessage(loadingId);
+                    appendMessage("AI", data.reply, "ai-message");
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                    removeMessage(loadingId);
+                    appendMessage("AI", "Произошла ошибка при обработке запроса. Пожалуйста, попробуйте еще раз.", "ai-message error");
+                });
             }
+        }
 
-            function sendMessage() {
-                const chatBody = document.getElementById("chatBody");
-                const chatInput = document.getElementById("chatInput");
-                const message = chatInput.value.trim();
+        // Функция для добавления сообщения
+        function appendMessage(sender, text, className) {
+            const chatBody = document.getElementById("chatBody");
+            const messageElement = document.createElement("div");
+            messageElement.className = `message ${className}`;
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
+            chatBody.appendChild(messageElement);
+            chatBody.scrollTop = chatBody.scrollHeight;
+            const id = `msg-${Date.now()}`;
+            messageElement.id = id;
+            return id;
+        }
 
-                if (message) {
-                    appendMessage("Вы", message, "user-message");
-
-                    chatInput.value = "";
-
-                    const loadingId = appendMessage("AI", "Печатает...", "ai-message");
-
-                    fetch("/chat", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ message: message })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        removeMessage(loadingId);
-                        appendMessage("AI", data.reply, "ai-message");
-                    })
-                    .catch(error => {
-                        console.error("Ошибка:", error);
-                        removeMessage(loadingId);
-                        appendMessage("AI", "Произошла ошибка при обработке запроса. Пожалуйста, попробуйте еще раз.", "ai-message error");
-                    });
-                }
+        // Функция для удаления сообщения (напр. статуса загрузки)
+        function removeMessage(id) {
+            const message = document.getElementById(id);
+            if (message) {
+                message.remove();
             }
+        }
 
-            function appendMessage(sender, text, className) {
-                const chatBody = document.getElementById("chatBody");
-                const messageElement = document.createElement("div");
-                messageElement.className = `message ${className}`;
-                messageElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
-                chatBody.appendChild(messageElement);
-                chatBody.scrollTop = chatBody.scrollHeight;
-                return messageElement.id = `msg-${Date.now()}`;
-            }
+        // Тоггл навигационного меню на мобильных устройствах
+        function toggleMenu() {
+            const navList = document.querySelector('.nav-list');
+            navList.classList.toggle('open');
+        }
+    </script>
 
-            function removeMessage(id) {
-                const message = document.getElementById(id);
-                if (message) {
-                    message.remove();
-                }
-            }
-        </script>
-    </body>
+</body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,9 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Войти</title>
     <link rel="stylesheet" href="../static/static/login.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Основной шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
 </head>
 <body>
     <div class="login-container">
+        <div class="image-container">
+            <img src="../static/static/login.svg" alt="Войти баннер" class="header-image">
+        </div>
         <h1>Войти</h1>
         <form id="login-form">
             <div class="form-group">
@@ -18,8 +25,8 @@
                 <label for="password">Пароль:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Войти</button>
-            <a href="/register" class="button-reg">Регистрация</a>
+            <button type="submit" class="submit-button">Войти</button>
+            <a href="/register" class="reg-link">Регистрация</a>
         </form>
         <p id="error-message" class="error-message" style="display:none;">Неверный логин или пароль</p>
     </div>
@@ -38,7 +45,7 @@
             };
 
             try {
-                const response = await fetch('/login', {  // Путь теперь изменен на локальный Flask сервер
+                const response = await fetch('/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -47,18 +54,14 @@
                 });
 
                 if (!response.ok) {
-                    // Если сервер возвращает ошибку, показываем сообщение
                     throw new Error('Неверный логин или пароль');
                 }
 
                 const data = await response.json();
                 
                 if (data.token) {
-                    // Сохраняем токен и имя пользователя в localStorage
                     localStorage.setItem('token', data.token);
-                    localStorage.setItem('username', credentials.username); // Сохраняем имя пользователя
-
-                    // Перенаправляем на главную страницу после успешного входа
+                    localStorage.setItem('username', credentials.username);
                     window.location.href = '/';
                 } else {
                     throw new Error('Токен не получен');
