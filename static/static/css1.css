@@ -117,7 +117,51 @@ header {
     color: var(--color-accent);
 }
 
-/* Форма поиска */
+/* Адаптивность для навбара */
+@media (max-width: 900px) {
+    .main-nav .menu-toggle {
+        display: block;
+    }
+
+    .nav-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--color-primary);
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+        max-height: 0;
+        overflow: hidden;
+        box-shadow: var(--shadow-medium);
+        border-top: 1px solid var(--color-border);
+    }
+
+    .nav-list.open {
+        max-height: 300px; 
+    }
+
+    .nav-list a {
+        font-size: 1.1rem;
+    }
+
+    .auth-cart {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/******************************************
+ * Поиск + кнопка "Фильтр"
+ ******************************************/
+.search-filter-wrapper {
+    position: relative; /* Важно! Чтобы поповер позиционировался относительно этого блока */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .search-container {
     display: flex;
     align-items: center;
@@ -157,9 +201,28 @@ header {
 }
 
 .search-button:hover {
-    background-color: #ff5a5a;
+    background-color: #ff7b7b;
 }
 
+.filter-button {
+    background-color: #ff5a5a;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: var(--radius-medium);
+    font-size: 0.9rem;
+    font-weight: var(--font-weight-semi);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.filter-button:hover {
+    background-color: #ff7b7b;
+}
+
+/******************************************
+ * Авторизация / Корзина
+ ******************************************/
 .auth-cart {
     display: flex;
     align-items: center;
@@ -189,48 +252,13 @@ header {
     text-decoration: none;
 }
 
-.cart-link img {
-    width: 16px;
-    height: 16px;
-}
-
 .cart-link:hover {
     color: var(--color-accent);
 }
 
-/* Адаптивность для навбара */
-@media (max-width: 900px) {
-    .main-nav .menu-toggle {
-        display: block;
-    }
-
-    .nav-list {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: var(--color-primary);
-        flex-direction: column;
-        gap: 20px;
-        padding: 20px;
-        max-height: 0;
-        overflow: hidden;
-        box-shadow: var(--shadow-medium);
-        border-top: 1px solid var(--color-border);
-    }
-
-    .nav-list.open {
-        max-height: 300px; 
-    }
-
-    .nav-list a {
-        font-size: 1.1rem;
-    }
-
-    .auth-cart {
-        flex-direction: column;
-        gap: 10px;
-    }
+.cart-link img {
+    width: 16px;
+    height: 16px;
 }
 
 /******************************************
@@ -251,6 +279,7 @@ header {
  * Карточка продукта
  ******************************************/
 .product-card {
+    position: relative; /* чтобы position: absolute у favorite-icon-container работало */
     background-color: var(--color-primary);
     border-radius: var(--radius-medium);
     box-shadow: var(--shadow-small);
@@ -259,7 +288,6 @@ header {
     display: flex;
     flex-direction: column;
     height: 100%;
-    position: relative;
 }
 
 .product-card:hover {
@@ -275,7 +303,6 @@ header {
     flex: 1;
 }
 
-/* Изображение */
 .product-image-container {
     width: 100%;
     height: 200px;
@@ -295,12 +322,12 @@ header {
     transform: scale(1.05);
 }
 
-/* Текстовая часть */
+/* Текст */
 .product-info {
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-height: 200px; /* Фиксированная минимальная высота */
+    min-height: 200px;
 }
 
 .product-title {
@@ -320,11 +347,15 @@ header {
     color: #777;
     margin-bottom: 15px;
     flex: 1;
-    min-height: 60px; /* Минимальная высота для описания */
+    min-height: 60px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+}
+
+.product-details {
+    margin-bottom: 15px;
 }
 
 .product-price {
@@ -340,7 +371,9 @@ header {
     margin: 0 0 10px 0;
 }
 
-/* Сообщение при отсутствии продуктов */
+/******************************************
+ * Сообщение при отсутствии продуктов
+ ******************************************/
 .no-products {
     display: block;
     text-align: center;
@@ -351,7 +384,7 @@ header {
 }
 
 /******************************************
- * Адаптивность (контейнер продуктов)
+ * Адаптивность (продукты)
  ******************************************/
 @media (max-width: 768px) {
     .product-container {
@@ -371,7 +404,6 @@ header {
  * Форма добавления в корзину (внутри карточки)
  ******************************************/
 .add-to-cart-form {
-    /* Форма внутри карточки без больших отступов */
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -402,9 +434,7 @@ header {
     background-color: #e75151;
 }
 
-/******************************************
- * Стили для поля выбора количества
- ******************************************/
+/* Количество */
 .quantity-input {
     display: flex;
     align-items: center;
@@ -449,35 +479,33 @@ header {
     border-color: var(--color-accent);
 }
 
-/* Убираем стрелки в input[type=number] (Chrome/Safari) */
+/* Убираем стрелки для input[type=number] */
 .quantity-input input::-webkit-outer-spin-button,
 .quantity-input input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-
 .quantity-input input[type=number] {
-    -moz-appearance: textfield; /* Для Firefox */
+    -moz-appearance: textfield; /* Firefox */
 }
 
 /******************************************
- * Кнопка "В корзине" (когда товар уже в корзине)
+ * Кнопка "В корзине" (если товар уже добавлен)
  ******************************************/
 .in-cart-button {
-    background-color: #999; /* Можно сделать серым или любым другим */
+    background-color: #999;
     border: none;
     color: #fff;
     border-radius: var(--radius-medium);
     padding: 10px 20px;
     font-size: 1rem;
     font-weight: var(--font-weight-semi);
-    cursor: default; /* Курсор обычный, т.к. нельзя нажать */
+    cursor: default; /* не кликается */
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
 }
-
 .in-cart-button i {
     font-size: 1rem;
 }
@@ -491,51 +519,48 @@ header {
     margin-top: 10px;
     text-align: center;
 }
-/* Контейнер иконки избранного (на карточке) */
+
+/******************************************
+ * Избранное (иконка сердечка)
+ ******************************************/
 .favorite-icon-container {
     position: absolute;
     top: 10px;
     right: 10px;
     z-index: 10;
     cursor: pointer;
-  }
-  
-  /* Сама иконка сердечка */
-  .favorite-icon {
-    font-size: 1.3rem; /* или подберите другой */
+}
+.favorite-icon {
+    font-size: 1.3rem;
     transition: color 0.3s ease;
-  }
-  
-  .favorite-icon.red {
-    color: #FF6B6B; /* красное сердечко */
-  }
-  
-  .favorite-icon.gray {
+}
+.favorite-icon.red {
+    color: var(--color-accent); /* красное сердечко */
+}
+.favorite-icon.gray {
     color: #ccc; /* серое сердечко */
-  }
-  
-  /* Страница «Избранное» */
-  .favorites-container {
+}
+
+/******************************************
+ * Пример стилей для страницы «Избранное»
+ ******************************************/
+.favorites-container {
     width: 90%;
     max-width: 1200px;
     margin: 120px auto 40px;
-    /* отступы под фиксированный хедер */
     padding-bottom: 40px;
-  }
-  
-  .favorites-title {
+}
+.favorites-title {
     font-size: 1.8rem;
     margin-bottom: 30px;
     text-align: center;
-  }
-  
-  .favorites-list {
+}
+.favorites-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
-  }
-  
-  .favorite-item {
+}
+.favorite-item {
     display: flex;
     gap: 20px;
     align-items: center;
@@ -544,37 +569,31 @@ header {
     border-radius: var(--radius-medium);
     box-shadow: var(--shadow-small);
     transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-  }
-  
-  .favorite-item:hover {
+}
+.favorite-item:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-medium);
-  }
-  
-  .favorite-image {
+}
+.favorite-image {
     width: 120px;
     height: 120px;
     border-radius: var(--radius-medium);
     object-fit: cover;
-  }
-  
-  .favorite-details h3 {
+}
+.favorite-details h3 {
     margin: 0 0 5px;
     font-size: 1.2rem;
     font-weight: var(--font-weight-semi);
-  }
-  
-  .favorite-price {
+}
+.favorite-price {
     color: var(--color-accent);
     font-size: 1.1rem;
     font-weight: var(--font-weight-bold);
-  }
-  
-  .remove-fav-form {
+}
+.remove-fav-form {
     margin-left: auto;
-  }
-  
-  .remove-fav-button {
+}
+.remove-fav-button {
     background-color: var(--color-accent);
     color: #fff;
     padding: 8px 12px;
@@ -582,44 +601,82 @@ header {
     transition: background var(--transition-fast);
     cursor: pointer;
     font-weight: var(--font-weight-semi);
-  }
-  
-  .remove-fav-button:hover {
+}
+.remove-fav-button:hover {
     background-color: #ff5a5a;
-  }
-  
-  .empty-favorites {
+}
+.empty-favorites {
     text-align: center;
     font-size: 1.2rem;
     color: #999;
-  }
-  .product-card {
-    position: relative; /* Чтобы абсолютное позиционирование favorite-icon-container работало */
-    background-color: var(--color-primary);
-    border-radius: var(--radius-medium);
-    box-shadow: var(--shadow-small);
-    padding: 20px;
-    /* ... остальное, как в вашем дизайне ... */
-  }
-  
-  .favorite-icon-container {
+}
+
+/******************************************
+ * Поповер "Фильтр" — делаем «красивое» всплытие
+ ******************************************/
+.filter-popover {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 10;
-  }
-  
-  .favorite-icon {
-    font-size: 1.3rem;
+    top: 110%; /* Чуть ниже кнопки «Фильтр» */
+    right: 0;
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-medium);
+    border-radius: var(--radius-medium);
+    padding: 15px;
+    width: 220px;
+    /* Для анимации появления */
+    transform-origin: top right;
+    transform: translateY(-10px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    z-index: 9999;
+}
+
+/* Стрелочка */
+.filter-popover::before {
+    content: "";
+    position: absolute;
+    top: -8px; /* чтобы "пробить" вверх */
+    right: 20px; 
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: transparent transparent var(--color-primary) transparent;
+}
+
+.filter-popover.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.filter-popover h3 {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-semi);
+}
+
+.filter-option {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.filter-option input {
+    margin-right: 6px;
+}
+
+.apply-filter-btn {
+    display: inline-block;
+    background-color: var(--color-accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-medium);
+    padding: 8px 15px;
+    font-weight: var(--font-weight-semi);
     cursor: pointer;
-    transition: color 0.3s ease;
-  }
-  
-  .favorite-icon.red {
-    color: var(--color-accent); /* Красное сердечко */
-  }
-  
-  .favorite-icon.gray {
-    color: #ccc; /* Серое сердечко */
-  }
-  
+    transition: background-color var(--transition-fast);
+}
+.apply-filter-btn:hover {
+    background-color: #ff7b7b;
+}

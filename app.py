@@ -6,7 +6,7 @@ from cart import cart_bp
 from pay import pay_bp
 #from ai import ai_bp
 import requests
-from favorites import favorites_bp
+# from favorites import favorites_bp
 
 
 from config import Config
@@ -15,8 +15,8 @@ from registration import registration_bp  # Импорт Blueprint
 app = Flask(__name__)
 app.config.from_object(Config)
 
-CATEGORIES_API_URL = app.config['API_URL'] + "/Categories"
-app.register_blueprint(favorites_bp)
+# CATEGORIES_API_URL = app.config['API_URL'] + "/Categories"
+# app.register_blueprint(favorites_bp)
 app.register_blueprint(products_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(registration_bp)
@@ -33,7 +33,7 @@ def index():
     """
     try:
         # Запрос к API для получения категорий
-        response = requests.get(CATEGORIES_API_URL)
+        response = requests.get(categories)
         response.raise_for_status()
         categories = response.json()
     except requests.exceptions.RequestException as e:
