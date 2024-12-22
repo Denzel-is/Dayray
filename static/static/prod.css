@@ -513,3 +513,39 @@ header {
         font-size: 1.4rem;
     }
 }
+
+.auth-cart {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.auth-link {
+    font-size: 0.95rem;
+    font-weight: var(--font-weight-semi);
+    color: var(--color-text);
+    transition: color var(--transition-fast);
+}
+
+.auth-link:hover {
+    color: var(--color-accent);
+}
+
+.cart-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: var(--font-weight-semi);
+    font-size: 1rem;
+    color: var(--color-text);
+    transition: color var(--transition-fast);
+}
+
+.cart-link:hover {
+    color: var(--color-accent);
+}
+
+.cart-link img {
+    width: 16px;
+    height: 16px;
+}

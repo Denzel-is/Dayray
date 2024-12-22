@@ -41,7 +41,7 @@ def login():
 
 @login_bp.route('/logout')
 def logout():
-
+    session.pop('token', None)    
     session.pop('username', None)    
     session.pop('customer_id', None)
     return redirect('/')
