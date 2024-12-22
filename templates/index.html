@@ -1,252 +1,192 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
-    <title>LAPKA - Интернет Зоомагазин</title>
-    <link rel="stylesheet" href="../static/static/css.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Используем современный, дружелюбный шрифт -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LAPKA – Интернет Зоомагазин</title>
+  
+  <!-- Подключаем Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Иконки (FontAwesome) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+
+  <!-- Подключаем стили -->
+  <link rel="stylesheet" href="../static/static/css.css" />
 </head>
+
 <body>
-    <!-- Кнопка для чата -->
-    <div class="chat-container">
-        <button class="chat-toggle" onclick="toggleChat()" aria-label="Открыть чат поддержки">💬</button>
-        <div id="chatBox" class="chat-box">
-            <div class="chat-header">
-                <h2>Чат с ИИ-ассистентом</h2>
-                <button onclick="toggleChat()" aria-label="Закрыть чат">✕</button>
-            </div>
-            <div id="chatBody" class="chat-body"></div>
-            <div class="chat-footer">
-                <input id="chatInput" type="text" placeholder="Напишите сообщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
-                <button onclick="sendMessage()">Отправить</button>
-            </div>
-        </div>
+  <!-- Кнопка чата -->
+  <div class="chat-container">
+    <button class="chat-toggle" onclick="toggleChat()" aria-label="Открыть чат поддержки">💬</button>
+    <div id="chatBox" class="chat-box">
+      <div class="chat-header">
+        <h2>Чат с ИИ-ассистентом</h2>
+        <button onclick="toggleChat()" aria-label="Закрыть чат">✕</button>
+      </div>
+      <div id="chatBody" class="chat-body"></div>
+      <div class="chat-footer">
+        <input
+          id="chatInput"
+          type="text"
+          placeholder="Напишите сообщение..."
+          onkeydown="if(event.key === 'Enter') sendMessage()"
+        />
+        <button onclick="sendMessage()">Отправить</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Хедер -->
-    <header>
-        <div class="header-content">
-            <a href="#top" class="logo-title">
-                <img src="../static/static/lapka.png" alt="LAPKA Logo">
-                <h1>LAPKA</h1>
-            </a>
-            <nav class="main-nav">
-                <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
-                <ul class="nav-list">
-                    <li><a href="#top">Главная</a></li>
-                    <li><a href="#categories">Категории</a></li>
-                    <li><a href="#suppliers">Партнеры</a></li>
-                    <li><a href="#footer">Контакты</a></li>
-                </ul>
-            </nav>
-            <div class="auth-cart">
-                {% if 'username' in session %}
-                    <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
-                {% else %}
-                    <a href="/login" class="auth-link">Войти</a>
-                    <a href="/register" class="auth-link">Регистрация</a>
-                {% endif %}
-                <a href="/cart" class="cart-link">
-                    <img src="../static/static/cart.png" alt="Корзина"> Корзина
-                    <li><a href="/favorites">Избранное</a></li>
-                </a>
-            </div>
-        </div>
-    </header>
+  <!-- Хедер -->
+  <header>
+    <div class="header-content">
+      <!-- Лого -->
+      <a href="#top" class="logo-title">
+        <img src="../static/static/lapka.png" alt="LAPKA Logo" />
+        <h1>LAPKA</h1>
+      </a>
 
-    <main>
-        {% if payment_status %}
-            <div class="alert alert-success">{{ payment_status }}</div>
+      <!-- Навигация -->
+      <nav class="main-nav">
+        <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
+        <ul class="nav-list">
+          <li><a href="#top">Главная</a></li>
+          <li><a href="#categories">Категории</a></li>
+          <li><a href="#suppliers">Партнеры</a></li>
+          <li><a href="#footer">Контакты</a></li>
+        </ul>
+      </nav>
+
+      <!-- Авторизация / Корзина -->
+      <div class="auth-cart">
+        {% if 'username' in session %}
+          <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
+        {% else %}
+          <a href="/login" class="auth-link">Войти</a>
+          <a href="/register" class="auth-link">Регистрация</a>
         {% endif %}
+        <!-- <div class="favorite-header-icon">
+          <i class="fas fa-heart"></i>
+          <span class="favorite-tooltip">Избранное</span>
+        </div> -->
+        <a href="/cart" class="cart-link">
+          <img src="../static/static/cart.png" alt="Корзина" />
+          Корзина
+        </a>
+      </div>
+    </div>
+  </header>
 
-        <!-- Баннер -->
-        <section class="banner" id="top">
-            <div class="banner-content">
-                <div class="banner-text">
-                    <h2>Добро пожаловать в LAPKA</h2>
-                    <p>Лучшие товары для ваших любимых питомцев. Корма, игрушки, аксессуары – всё, что нужно, уже здесь.</p>
-                    <a href="#categories" class="banner-button">Перейти к товарам</a>
-                </div>
-            </div>
-        </section>
+  <!-- Основной контент -->
+  <main>
+    {% if payment_status %}
+      <div class="alert alert-success">{{ payment_status }}</div>
+    {% endif %}
 
-        <!-- Категории -->
-        <section class="section-wrapper" id="categories">
-            <h2 class="section-title">Категории</h2>
-            <p class="section-subtitle">Выберите категорию для вашего питомца</p>
-            <div class="categories">
-                {% if error %}
-                    <p class="error">{{ error }}</p>
-                {% elif categories %}
-                    {% for category in categories %}
-                        <div class="category-item">
-                            <a href="/products?categoryId={{ category.id }}">
-                                <div class="category-image-container">
-                                    <img src="{{ category.imageUrl }}" alt="{{ category.name }}" class="category-img">
-                                </div>
-                                <p class="category-name">{{ category.name }}</p>
-                            </a>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>Категории не найдены</p>
-                {% endif %}
-            </div>
-        </section>
-
-        <!-- Поставщики -->
-        <section class="section-wrapper" id="suppliers">
-            <h2 class="section-title">Наши Партнеры</h2>
-            <p class="section-subtitle">Надежные производители и поставщики</p>
-            <div class="suppliers">
-                <div class="supplier">
-                    <div class="supplier-circle">
-                        <img src="../static/static/sup1.png" alt="sup1 Logo">
-                    </div>
-                    <h3>Sup1</h3>
-                    <p>Оценка: ★★★★☆</p>
-                </div>
-                <div class="supplier highlight">
-                    <div class="supplier-circle">
-                        <img src="../static/static/sup2.png" alt="sup2 Logo">
-                    </div>
-                    <h3>Car` Zverey</h3>
-                    <p>Оценка: ★★★★★</p>
-                </div>
-                <div class="supplier">
-                    <div class="supplier-circle">
-                        <img src="../static/static/sup3.png" alt="sup3 Logo">
-                    </div>
-                    <h3>AmanMisik</h3>
-                    <p>Оценка: ★★★★☆</p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Футер -->
-    <footer id="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>О нас</h3>
-                <p>Интернет Зоомагазин LAPKA – ваш надежный поставщик товаров для питомцев. Мы стремимся обеспечить качественный сервис и широкий ассортимент для всех ваших любимцев.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Контакты</h3>
-                <p>Телефон: +7 771 525 10 40</p>
-                <p>Email: lapkazoo@gmail.com</p>
-            </div>
-            <div class="footer-section">
-                <h3>Следите за нами</h3>
-                <p><a href="#">Instagram</a></p>
-            </div>
+    <!-- Баннер -->
+    <section class="banner" id="top">
+      <div class="banner-content">
+        <div class="banner-text">
+          <h2>Добро пожаловать в LAPKA</h2>
+          <p>Товары для питомцев от лучших поставщиков. Корма, игрушки, аксессуары – всё, что нужно уже здесь!</p>
+          <a href="#categories" class="banner-button">Перейти к товарам</a>
         </div>
-        <div class="footer-map" id="map"></div>
-        <div class="footer-bottom">
-            <p>© 2024 Интернет Магазин LAPKA, Все права защищены</p>
+      </div>
+    </section>
+
+    <!-- Категории -->
+    <section class="section-wrapper" id="categories">
+      <h2 class="section-title">Категории</h2>
+      <p class="section-subtitle">Выберите то, что нужно вашему питомцу</p>
+      <div class="categories">
+        {% if error %}
+          <p class="error">{{ error }}</p>
+        {% elif categories %}
+          {% for category in categories %}
+            <div class="category-item-supercool">
+              <div class="cat-image">
+                <img src="{{ category.imageUrl }}" alt="{{ category.name }}" />
+              </div>
+              <div class="cat-info">
+                <h3 class="cat-title">{{ category.name }}</h3>
+                <p class="cat-desc">Найдите всё необходимое в этой категории</p>
+                <a href="/products?categoryId={{ category.id }}" class="cat-button">Смотреть товары</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>Категории не найдены</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Партнеры -->
+    <section class="section-wrapper" id="suppliers">
+      <h2 class="section-title">Наши Партнеры</h2>
+      <p class="section-subtitle">Надежные производители и поставщики</p>
+      <div class="suppliers">
+        <div class="supplier">
+          <div class="supplier-circle">
+            <img src="../static/static/sup1.png" alt="sup1 Logo" />
+          </div>
+          <h3>Sup1</h3>
+          <p>Оценка: ★★★★☆</p>
         </div>
-    </footer>
+        <div class="supplier highlight">
+          <div class="supplier-circle">
+            <img src="../static/static/sup2.png" alt="sup2 Logo" />
+          </div>
+          <h3>Car’ Zverey</h3>
+          <p>Оценка: ★★★★★</p>
+        </div>
+        <div class="supplier">
+          <div class="supplier-circle">
+            <img src="../static/static/sup3.png" alt="sup3 Logo" />
+          </div>
+          <h3>AmanMisik</h3>
+          <p>Оценка: ★★★★☆</p>
+        </div>
+      </div>
+    </section>
+  </main>
 
-    <script>
-        // Функция для открытия/закрытия чата
-        function toggleChat() {
-            const chatBox = document.getElementById("chatBox");
-            chatBox.style.display = (chatBox.style.display === "none" || chatBox.style.display === "") ? "flex" : "none";
-        }
+  <!-- Футер -->
+  <footer id="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>О нас</h3>
+        <p>
+          Интернет Зоомагазин LAPKA – ваш надежный поставщик товаров для питомцев.
+          Мы стремимся обеспечить качественный сервис и широкий ассортимент.
+        </p>
+      </div>
+      <div class="footer-section">
+        <h3>Контакты</h3>
+        <p>Телефон: +7 771 525 10 40</p>
+        <p>Email: lapkazoo@gmail.com</p>
+      </div>
+      <div class="footer-section">
+        <h3>Следите за нами</h3>
+        <p><a href="#">Instagram</a></p>
+      </div>
+    </div>
+    <div class="footer-map" id="map"></div>
+    <div class="footer-bottom">
+      <p>© 2024 Интернет Магазин LAPKA, Все права защищены</p>
+    </div>
+  </footer>
 
-        // Функция отправки сообщения
-        function sendMessage() {
-            const chatBody = document.getElementById("chatBody");
-            const chatInput = document.getElementById("chatInput");
-            const message = chatInput.value.trim();
-
-            if (message) {
-                const userMsgId = appendMessage("Вы", message, "user-message");
-                chatInput.value = "";
-
-                const loadingId = appendMessage("AI", "Печатает...", "ai-message");
-
-                fetch("/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: message })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    removeMessage(loadingId);
-                    appendMessage("AI", data.reply, "ai-message");
-                })
-                .catch(error => {
-                    console.error("Ошибка:", error);
-                    removeMessage(loadingId);
-                    appendMessage("AI", "Произошла ошибка при обработке запроса. Пожалуйста, попробуйте еще раз.", "ai-message error");
-                });
-            }
-        }
-
-        // Функция для добавления сообщения
-        function appendMessage(sender, text, className) {
-            const chatBody = document.getElementById("chatBody");
-            const messageElement = document.createElement("div");
-            messageElement.className = `message ${className}`;
-            messageElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
-            chatBody.appendChild(messageElement);
-            chatBody.scrollTop = chatBody.scrollHeight;
-            const id = `msg-${Date.now()}`;
-            messageElement.id = id;
-            return id;
-        }
-
-        // Функция для удаления сообщения (напр. статуса загрузки)
-        function removeMessage(id) {
-            const message = document.getElementById(id);
-            if (message) {
-                message.remove();
-            }
-        }
-
-        // Тоггл навигационного меню на мобильных устройствах
-        function toggleMenu() {
-            const navList = document.querySelector('.nav-list');
-            navList.classList.toggle('open');
-        }
-
-        // Инициализация карты
-        function initMap() {
-            const almaty = { lat: 43.238949, lng: 76.889709 }; // Координаты Алматы
-            const map = new google.maps.Map(document.getElementById("map"), {
-                center: almaty,
-                zoom: 12, // Уровень масштабирования
-            });
-
-            // Добавляем маркер на карту
-            new google.maps.Marker({
-                position: almaty,
-                map: map,
-                title: "Алматы",
-            });
-        }
-    </script>
-
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMgWJNDXenCTh040ltJ68nXFQPByhpWHs&callback=initMap">
-    </script>
-
-    <style>
-        .footer-map {
-            width: 100%;
-            height: 300px;
-            margin-top: 20px;
-        }
-    </style>
+  <!-- Подключаем скрипт -->
+  <script src="../static/static/index.js"></script>
+  <!-- Google Maps (замените ключ на реальный) -->
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMgWJNDXenCTh040ltJ68nXFQPByhpWHs&callback=initMap"></script>
 </body>
 </html>

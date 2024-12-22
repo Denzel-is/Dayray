@@ -15,7 +15,7 @@ from registration import registration_bp  # Импорт Blueprint
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# CATEGORIES_API_URL = app.config['API_URL'] + "/Categories"
+CATEGORIES_API_URL = app.config['API_URL'] + "/Categories"
 # app.register_blueprint(favorites_bp)
 app.register_blueprint(products_bp)
 app.register_blueprint(login_bp)
@@ -33,7 +33,7 @@ def index():
     """
     try:
         # Запрос к API для получения категорий
-        response = requests.get(categories)
+        response = requests.get(CATEGORIES_API_URL)
         response.raise_for_status()
         categories = response.json()
     except requests.exceptions.RequestException as e:

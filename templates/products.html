@@ -17,7 +17,7 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
   />
-  <!-- Подключаем внешний CSS -->
+  <!-- Ваш основной CSS -->
   <link rel="stylesheet" href="../static/static/css1.css" />
 </head>
 
@@ -27,12 +27,11 @@
     <div class="header-content">
       <!-- Лого -->
       <a href="/" class="logo-title">
-        <!-- Подставьте нужный путь к логотипу -->
         <img src="../static/static/lapka.png" alt="LAPKA Logo" />
         <h1>LAPKA</h1>
       </a>
 
-      <!-- Навигация -->
+      <!-- Навигация (Navbar) -->
       <nav class="main-nav">
         <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
         <ul class="nav-list">
@@ -43,51 +42,63 @@
         </ul>
       </nav>
 
-      <!-- Блок поиска + кнопка "Фильтр" -->
+      <!-- Поисковая строка (при hover — «История поиска») -->
       <div class="search-filter-wrapper">
         <div class="search-container">
-          <!-- GET-запрос на /products (можно адаптировать) -->
-          <form action="/products" method="get">
+          <form action="/products" method="get" onsubmit="return smartSearchSubmit(event)">
             <input
               type="text"
               name="query"
               placeholder="Найти продукт..."
               class="search-input"
+              id="searchInput"
               required
             />
             <button type="submit" class="search-button">Поиск</button>
+
+            <!-- Поповер "История поиска" (показывается при hover на .search-container) -->
+            <div class="history-popover" id="historyPopover">
+              <div class="history-header">
+                <h3>История поиска</h3>
+                <button class="clear-history-btn" onclick="clearSearchHistory()">
+                  <i class="fas fa-trash"></i> Очистить всё
+                </button>
+              </div>
+              <ul class="history-list" id="historyList"></ul>
+            </div>
           </form>
         </div>
 
-        <!-- Кнопка "Фильтр" -->
-        <button class="filter-button" onclick="toggleFilterPopover()">Фильтр</button>
+        <!-- Иконка "Фильтр" + поповер под иконкой -->
+        <div class="filter-icon-container">
+          <i class="fas fa-filter filter-icon" onclick="toggleFilterPopover()"></i>
+          <span class="filter-tooltip">Фильтр</span>
 
-        <!-- Поповер с опциями сортировки -->
-        <div class="filter-popover" id="filterPopover">
-          <h3>Сортировать по:</h3>
-          
-          <label class="filter-option">
-            <input type="radio" name="sortOption" value="nameAsc" />
-            Названию (А-Я)
-          </label>
-          <label class="filter-option">
-            <input type="radio" name="sortOption" value="nameDesc" />
-            Названию (Я-А)
-          </label>
-          <label class="filter-option">
-            <input type="radio" name="sortOption" value="priceAsc" />
-            Цене (сначала дешёвые)
-          </label>
-          <label class="filter-option">
-            <input type="radio" name="sortOption" value="priceDesc" />
-            Цене (сначала дорогие)
-          </label>
-
-          <button class="apply-filter-btn" onclick="applyFilter()">Применить</button>
+          <!-- Поповер Фильтра (под иконкой) -->
+          <div class="filter-popover" id="filterPopover">
+            <h3>Сортировать по:</h3>
+            <label class="filter-option">
+              <input type="radio" name="sortOption" value="nameAsc" />
+              Названию (А-Я)
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="sortOption" value="nameDesc" />
+              Названию (Я-А)
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="sortOption" value="priceAsc" />
+              Цене (сначала дешёвые)
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="sortOption" value="priceDesc" />
+              Цене (сначала дорогие)
+            </label>
+            <button class="apply-filter-btn" onclick="applyFilter()">Применить</button>
+          </div>
         </div>
       </div>
 
-      <!-- Кнопки авторизации / переход в корзину -->
+      <!-- Авторизация / Корзина / Избранное -->
       <div class="auth-cart">
         {% if 'username' in session %}
           <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
@@ -95,8 +106,15 @@
           <a href="/login" class="auth-link">Войти</a>
           <a href="/register" class="auth-link">Регистрация</a>
         {% endif %}
+        
+        <!-- Иконка «Избранное» (сердечко) -->
+        <div class="favorite-header-icon">
+          <i class="fas fa-heart"></i>
+          <span class="favorite-tooltip">Избранное</span>
+        </div>
+
+        <!-- Корзина -->
         <a href="/cart" class="cart-link">
-          <!-- Путь к иконке корзины -->
           <img src="../static/static/cart.png" alt="Корзина" /> Корзина
         </a>
       </div>
@@ -107,15 +125,16 @@
   <main class="product-container" id="productContainer">
     {% if products %}
       {% for product in products %}
-        <div class="product-card" data-product-id="{{ product.id }}">
-          <!-- Иконка "Избранное" -->
+        <div class="product-card" 
+             data-product-id="{{ product.id }}" 
+             data-product-name="{{ product.name | lower }}">
+
+          <!-- Иконка "Избранное" (внутри карточки) -->
           <div class="favorite-icon-container">
             {% if product.id in favorite_item_ids %}
-              <!-- Уже в избранном => красное сердце -->
               <i class="fas fa-heart favorite-icon red"
                  onclick="toggleFavorite(event, '{{ product.id }}', true)"></i>
             {% else %}
-              <!-- Ещё не в избранном => серое сердце -->
               <i class="fas fa-heart favorite-icon gray"
                  onclick="toggleFavorite(event, '{{ product.id }}', false)"></i>
             {% endif %}
@@ -140,14 +159,12 @@
             </div>
           </a>
 
-          <!-- Если продукт уже в корзине -->
           {% if product.id in cart_item_ids %}
             <button type="button" class="in-cart-button" disabled>
               <i class="fas fa-check"></i>
               <span>В корзине</span>
             </button>
           {% else %}
-            <!-- Форма добавления в корзину -->
             <form action="{{ url_for('cart.add_to_cart') }}" method="post" class="add-to-cart-form">
               <input type="hidden" name="product_id" value="{{ product.id }}" />
               <div class="quantity-input">
@@ -179,7 +196,7 @@
               </button>
             </form>
           {% endif %}
-
+          
           {% if error %}
             <p class="error-message">{{ error }}</p>
           {% endif %}
@@ -195,141 +212,7 @@
     <p>© 2024 LAPKA. Все права защищены.</p>
   </footer>
 
-  <!-- Скрипты -->
-  <script>
-    // 1) Тоггл мобильного меню
-    function toggleMenu() {
-      const navList = document.querySelector('.nav-list');
-      navList.classList.toggle('open');
-    }
-
-    // 2) Функция изменения количества
-    function changeQuantity(delta, id) {
-      const input = document.getElementById(`quantity-${id}`);
-      let currentValue = parseInt(input.value);
-      const minValue = parseInt(input.min);
-      const maxValue = parseInt(input.max);
-
-      const newValue = currentValue + delta;
-      if (newValue >= minValue && newValue <= maxValue) {
-        input.value = newValue;
-      }
-    }
-
-    // 3) Избранное (toggleFavorite)
-    async function toggleFavorite(event, productId, isFavorite) {
-      event.stopPropagation(); // чтобы клик по иконке не вел на детальную страницу
-      const icon = event.target;
-      
-      try {
-        const url = isFavorite ? '/remove_from_favorites' : '/add_to_favorites';
-        const formData = new FormData();
-        formData.append('product_id', productId);
-
-        const response = await fetch(url, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          // Меняем цвет сердечка
-          if (isFavorite) {
-            icon.classList.remove('red');
-            icon.classList.add('gray');
-            icon.setAttribute('onclick', `toggleFavorite(event, '${productId}', false)`);
-          } else {
-            icon.classList.remove('gray');
-            icon.classList.add('red');
-            icon.setAttribute('onclick', `toggleFavorite(event, '${productId}', true)`);
-          }
-        } else {
-          alert(data.error || 'Ошибка при работе с «Избранным»');
-        }
-      } catch (error) {
-        console.error('toggleFavorite error:', error);
-        alert('Ошибка сети при работе с «Избранным».');
-      }
-    }
-
-    // 4) Открытие/закрытие поповера сортировки
-    const filterPopover = document.getElementById('filterPopover');
-    let popoverVisible = false;
-
-    function toggleFilterPopover() {
-      popoverVisible = !popoverVisible;
-      if (popoverVisible) {
-        filterPopover.classList.add('visible');
-      } else {
-        filterPopover.classList.remove('visible');
-      }
-    }
-
-    // Закрывать поповер, если кликнули вне его (и не на кнопке "Фильтр")
-    document.addEventListener('click', function(event) {
-      const filterButton = document.querySelector('.filter-button');
-      if (
-        popoverVisible &&
-        !filterPopover.contains(event.target) &&
-        !filterButton.contains(event.target)
-      ) {
-        filterPopover.classList.remove('visible');
-        popoverVisible = false;
-      }
-    });
-
-    // 5) Применение сортировки (клиентская реализация)
-    function applyFilter() {
-      // Читаем выбранный вариант
-      let sortOption = document.querySelector('input[name="sortOption"]:checked');
-      if (!sortOption) {
-        alert('Выберите параметр сортировки');
-        return;
-      }
-      sortOption = sortOption.value;
-
-      // Скрываем поповер
-      toggleFilterPopover();
-
-      // Получаем все карточки
-      const productContainer = document.getElementById('productContainer');
-      const productCards = Array.from(productContainer.querySelectorAll('.product-card'));
-
-      // Формируем массив данных
-      let productsData = productCards.map(card => {
-        const name = card.querySelector('.product-title')?.textContent.trim() || '';
-        const priceText = card.querySelector('.product-price')?.textContent || '0';
-        const priceNum = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
-
-        return {
-          name: name,
-          price: priceNum,
-          element: card
-        };
-      });
-
-      // Сортируем
-      switch (sortOption) {
-        case 'nameAsc':
-          productsData.sort((a, b) => a.name.localeCompare(b.name, 'ru', {sensitivity: 'base'}));
-          break;
-        case 'nameDesc':
-          productsData.sort((a, b) => b.name.localeCompare(a.name, 'ru', {sensitivity: 'base'}));
-          break;
-        case 'priceAsc':
-          productsData.sort((a, b) => a.price - b.price);
-          break;
-        case 'priceDesc':
-          productsData.sort((a, b) => b.price - a.price);
-          break;
-      }
-
-      // Перестраиваем карточки в контейнере
-      productContainer.innerHTML = '';
-      productsData.forEach(item => {
-        productContainer.appendChild(item.element);
-      });
-    }
-  </script>
+  <!-- Подключаем скрипты -->
+  <script src="../static/static/script.js"></script>
 </body>
 </html>
