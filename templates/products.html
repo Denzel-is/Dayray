@@ -1,79 +1,223 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Продукты для кошек</title>
-    <link rel="stylesheet" href="../static/static/css1.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Основной шрифт -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Продукты для кошек</title>
+  <!-- Подключаем CSS -->
+  <link rel="stylesheet" href="../static/static/css1.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic-static.com" crossorigin />
+  <!-- Основной шрифт -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <!-- Иконки -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
 </head>
 <body>
-    <!-- Хедер с навбаром -->
-    <header>
-        <div class="header-content">
-            <a href="/" class="logo-title">
-                <img src="../static/static/lapka.png" alt="LAPKA Logo">
-                <h1>LAPKA</h1>
-            </a>
-            <nav class="main-nav">
-                <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
-                <ul class="nav-list">
-                    <li><a href="/">Главная</a></li>
-                    <li><a href="#categories">Категории</a></li>
-                    <li><a href="#suppliers">Партнеры</a></li>
-                    <li><a href="#footer">Контакты</a></li>
-                </ul>
-            </nav>
-            <div class="search-container">
-                <form action="/products" method="get">
-                    <input type="text" name="query" placeholder="Найти продукт..." class="search-input" required>
-                    <button type="submit" class="search-button">Поиск</button>
-                </form>
-            </div>
-            <div class="auth-cart">
-                {% if 'username' in session %}
-                    <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
-                {% else %}
-                    <a href="/login" class="auth-link">Войти</a>
-                    <a href="/register" class="auth-link">Регистрация</a>
-                {% endif %}
-                <a href="/cart" class="cart-link">
-                    <img src="../static/static/cart.png" alt="Корзина"> Корзина
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Список продуктов -->
-    <main class="product-container">
-        {% if products %}
-            {% for product in products %}
-                <div class="product-card">
-                    <a href="/product/{{ product.id }}">
-                        <div class="product-image-container">
-                            <img src="{{ product.imageUrl }}" alt="{{ product.name }}" class="product-image">
-                        </div>
-                        <h2 class="product-title">{{ product.name }}</h2>
-                        <p class="product-description">{{ product.description }}</p>
-                        <p class="product-price">{{ product.price }} тг.</p>
-                        <p class="product-stock">В наличии: {{ product.count }} шт.</p>
-                    </a>
-                </div>
-            {% endfor %}
+  <!-- Хедер с навбаром -->
+  <header>
+    <div class="header-content">
+      <a href="/" class="logo-title">
+        <img src="../static/static/lapka.png" alt="LAPKA Logo" />
+        <h1>LAPKA</h1>
+      </a>
+      <nav class="main-nav">
+        <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
+        <ul class="nav-list">
+          <li><a href="/">Главная</a></li>
+          <li><a href="#categories">Категории</a></li>
+          <li><a href="#suppliers">Партнеры</a></li>
+          <li><a href="#footer">Контакты</a></li>
+        </ul>
+      </nav>
+      <div class="search-container">
+        <form action="/products" method="get">
+          <input
+            type="text"
+            name="query"
+            placeholder="Найти продукт..."
+            class="search-input"
+            required
+          />
+          <button type="submit" class="search-button">Поиск</button>
+        </form>
+      </div>
+      <div class="auth-cart">
+        {% if 'username' in session %}
+          <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
         {% else %}
-            <p class="no-products">Продукты не найдены.</p>
+          <a href="/login" class="auth-link">Войти</a>
+          <a href="/register" class="auth-link">Регистрация</a>
         {% endif %}
-    </main>
+        <a href="/cart" class="cart-link">
+          <img src="../static/static/cart.png" alt="Корзина" /> Корзина
+        </a>
+      </div>
+    </div>
+  </header>
 
-    <script>
-        // Тоггл навигационного меню на мобильных устройствах
-        function toggleMenu() {
-            const navList = document.querySelector('.nav-list');
-            navList.classList.toggle('open');
+  <!-- Список продуктов -->
+  <main class="product-container">
+    {% if products %}
+      {% for product in products %}
+        <div class="product-card">
+          <!-- Иконка сердечка (справа сверху) -->
+          <div class="favorite-icon-container">
+            {% if product.id in favorite_item_ids %}
+              <!-- Уже в избранном => красное сердце -->
+              <i class="fas fa-heart favorite-icon red"
+                 onclick="toggleFavorite(event, '{{ product.id }}', true)"></i>
+            {% else %}
+              <!-- Ещё не в избранном => серое сердце -->
+              <i class="fas fa-heart favorite-icon gray"
+                 onclick="toggleFavorite(event, '{{ product.id }}', false)"></i>
+            {% endif %}
+          </div>
+
+          <!-- Ссылка на детальную страницу товара -->
+          <a href="/product/{{ product.id }}">
+            <div class="product-image-container">
+              <img
+                src="{{ product.imageUrl }}"
+                alt="{{ product.name }}"
+                class="product-image"
+              />
+            </div>
+            <div class="product-info">
+              <h2 class="product-title">{{ product.name }}</h2>
+              <p class="product-description">{{ product.description }}</p>
+              <div class="product-details">
+                <p class="product-price">{{ product.price }} тг.</p>
+                <p class="product-stock">В наличии: {{ product.count }} шт.</p>
+              </div>
+            </div>
+          </a>
+
+          <!-- Проверка: если ID этого продукта в списке cart_item_ids, значит товар уже в корзине -->
+          {% if product.id in cart_item_ids %}
+            <button type="button" class="in-cart-button" disabled>
+              <i class="fas fa-check"></i>
+              <span>В корзине</span>
+            </button>
+          {% else %}
+            <!-- Иначе - форма добавления в корзину -->
+            <form action="{{ url_for('cart.add_to_cart') }}" method="post" class="add-to-cart-form">
+              <input type="hidden" name="product_id" value="{{ product.id }}" />
+              <div class="quantity-input">
+                <button
+                  type="button"
+                  class="quantity-btn minus"
+                  aria-label="Уменьшить количество"
+                  onclick="changeQuantity(-1, '{{ product.id }}')"
+                >-</button>
+                <input
+                  type="number"
+                  id="quantity-{{ product.id }}"
+                  name="quantity"
+                  value="1"
+                  min="1"
+                  max="{{ product.count }}"
+                  required
+                />
+                <button
+                  type="button"
+                  class="quantity-btn plus"
+                  aria-label="Увеличить количество"
+                  onclick="changeQuantity(1, '{{ product.id }}')"
+                >+</button>
+              </div>
+              <button type="submit" class="add-to-cart-button">
+                <i class="fas fa-cart-plus"></i>
+                <span>Добавить в корзину</span>
+              </button>
+            </form>
+          {% endif %}
+
+          {% if error %}
+            <p class="error-message">{{ error }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="no-products">Продукты не найдены.</p>
+    {% endif %}
+  </main>
+
+  <script>
+    // Тоггл мобильного меню
+    function toggleMenu() {
+      const navList = document.querySelector('.nav-list');
+      navList.classList.toggle('open');
+    }
+
+    // Функция изменения количества
+    function changeQuantity(delta, id) {
+      const input = document.getElementById(`quantity-${id}`);
+      let currentValue = parseInt(input.value);
+      const minValue = parseInt(input.min);
+      const maxValue = parseInt(input.max);
+
+      const newValue = currentValue + delta;
+      if (newValue >= minValue && newValue <= maxValue) {
+        input.value = newValue;
+      }
+    }
+
+    /**
+     * toggleFavorite(event, productId, isFavorite)
+     * @param {Event} event - событие клика
+     * @param {string|number} productId - ID товара
+     * @param {boolean} isFavorite - true, если товар уже в избранном
+     */
+    async function toggleFavorite(event, productId, isFavorite) {
+      event.stopPropagation(); // чтобы клик по иконке не вел на детальную страницу
+
+      const icon = event.target;
+      
+      try {
+        // Используем маршруты БЕЗ /favorites в начале,
+        // т.к. блюпринт уже определяет: @favorites_bp.route('/add_to_favorites')
+        let url;
+        if (isFavorite) {
+          url = '/remove_from_favorites';
+        } else {
+          url = '/add_to_favorites';
         }
-    </script>
+
+        const formData = new FormData();
+        formData.append('product_id', productId);
+
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // Успешно меняем цвет сердечка
+          if (isFavorite) {
+            icon.classList.remove('red');
+            icon.classList.add('gray');
+            icon.setAttribute('onclick', `toggleFavorite(event, '${productId}', false)`);
+          } else {
+            icon.classList.remove('gray');
+            icon.classList.add('red');
+            icon.setAttribute('onclick', `toggleFavorite(event, '${productId}', true)`);
+          }
+        } else {
+          alert(data.error || 'Ошибка при работе с «Избранным»');
+        }
+      } catch (error) {
+        console.error('toggleFavorite error:', error);
+        alert('Ошибка сети при работе с «Избранным».');
+      }
+    }
+  </script>
 </body>
 </html>

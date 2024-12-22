@@ -1,52 +1,141 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <meta charset="UTF-8">
     <title>Оплата</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Подключаем стили pay.css, где у вас хранятся глобальные переменные и стили -->
     <link rel="stylesheet" href="../static/static/pay.css">
+    <!-- Основной шрифт -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" 
+      rel="stylesheet"
+    >
 </head>
 <body>
-    <div class="modal">
-        <form class="form" action="{{ url_for('pay.process_payment') }}" method="post">
-            <!-- Поля с передачей идентификатора заказа и суммы -->
-            <input type="hidden" name="order_id" value="{{ order_id if order_id else '' }}">
-            <input type="hidden" name="total" value="{{ total }}">
-            <input type="hidden" name="quantity" value="{{ quantity }}">
-            
-            <div class="paymentother">
-                <a href="/" class="paymentother">Назад</a>
+    <!-- Хедер с навбаром (аналогичный вашим другим страницам) -->
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo-title">
+                <img src="../static/static/lapka.png" alt="LAPKA Logo">
+                <h1>LAPKA</h1>
+            </a>
+            <nav class="main-nav">
+                <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
+                <ul class="nav-list">
+                    <li><a href="/">Главная</a></li>
+                    <li><a href="#categories">Категории</a></li>
+                    <li><a href="#suppliers">Партнеры</a></li>
+                    <li><a href="#footer">Контакты</a></li>
+                </ul>
+            </nav>
+            <div class="auth-cart">
+                {% if 'username' in session %}
+                    <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
+                {% else %}
+                    <a href="/login" class="auth-link">Войти</a>
+                    <a href="/register" class="auth-link">Регистрация</a>
+                {% endif %}
+                <a href="/cart" class="cart-link">
+                    <img src="../static/static/cart.png" alt="Корзина"> Корзина
+                </a>
             </div>
-            <div class="separator">
-                <hr class="line">
-                <p></p>
-                <hr class="line">
-            </div>
-            <div class="card-info">
-                <div class="input_container">
-                    <label class="input_label">Адрес</label>
-                    <input class="input_field" name="address" type="text" placeholder="Введите адрес (город, улица, дом, квартира)..." required>
+        </div>
+    </header>
+
+    <!-- Основной блок (форма оплаты) -->
+    <main>
+        <div class="modal">
+            <!-- Форма отправляет данные на процессинг оплаты -->
+            <form class="form" action="{{ url_for('pay.process_payment') }}" method="post">
+                <!-- Скрытые поля (ID заказа, сумма, количество) -->
+                <input type="hidden" name="order_id" value="{{ order_id if order_id else '' }}">
+                <input type="hidden" name="total" value="{{ total }}">
+                <input type="hidden" name="quantity" value="{{ quantity }}">
+
+                <!-- Кнопка "Назад" -->
+                <div class="paymentother">
+                    <a href="/" class="payment-back">Назад</a>
                 </div>
-                <div class="input_container">
-                    <label class="input_label">Имя владельца карты</label>
-                    <input class="input_field" name="card_name" type="text" placeholder="Введите полное имя..." required>
+
+                <div class="separator">
+                    <hr class="line">
+                    <p></p>
+                    <hr class="line">
                 </div>
-                <div class="input_container">
-                    <label class="input_label">Номер карты</label>
-                    <input class="input_field" name="card_number" type="text" placeholder="0000 0000 0000 0000" maxlength="16" required>
-                </div>
-                <div class="input_container">
-                    <label class="input_label">Срок действия / CVV</label>
-                    <div class="split">
-                        <input class="input_field" name="card_expiry" style="width: 250px;" type="text" placeholder="01/23" maxlength="5" required>
-                        <input class="input_field" name="card_cvv" style="width: 110px;" type="text" placeholder="CVV" maxlength="3" required>
+
+                <!-- Поля с адресом и данными карты -->
+                <div class="card-info">
+                    <div class="input_container">
+                        <label class="input_label">Адрес</label>
+                        <input 
+                          class="input_field" 
+                          name="address" 
+                          type="text" 
+                          placeholder="Введите адрес (город, улица, дом, квартира)..." 
+                          required
+                        >
+                    </div>
+                    <div class="input_container">
+                        <label class="input_label">Имя владельца карты</label>
+                        <input 
+                          class="input_field" 
+                          name="card_name" 
+                          type="text" 
+                          placeholder="Введите полное имя..." 
+                          required
+                        >
+                    </div>
+                    <div class="input_container">
+                        <label class="input_label">Номер карты</label>
+                        <input 
+                          class="input_field" 
+                          name="card_number" 
+                          type="text" 
+                          placeholder="0000 0000 0000 0000" 
+                          maxlength="16" 
+                          required
+                        >
+                    </div>
+                    <div class="input_container">
+                        <label class="input_label">Срок действия / CVV</label>
+                        <div class="split">
+                            <input 
+                              class="input_field" 
+                              name="card_expiry" 
+                              type="text" 
+                              placeholder="01/23" 
+                              maxlength="5" 
+                              required
+                            >
+                            <input 
+                              class="input_field" 
+                              name="card_cvv" 
+                              type="text" 
+                              placeholder="CVV" 
+                              maxlength="3" 
+                              required
+                            >
+                        </div>
                     </div>
                 </div>
-            </div>
-            <button class="checkout" type="submit">
-                <span>Оплатить</span>
-            </button>
-        </form>
-    </div>
+
+                <!-- Кнопка "Оплатить" -->
+                <button class="checkout" type="submit">
+                    <span>Оплатить</span>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Переключатель меню для мобильных устройств
+        function toggleMenu() {
+            const navList = document.querySelector('.nav-list');
+            navList.classList.toggle('open');
+        }
+    </script>
 </body>
 </html>
