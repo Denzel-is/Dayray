@@ -14,7 +14,7 @@ def view_cart():
     token = session.get('token')
     print(f"token : {token}")  # Токен для авторизации
     if not token:
-        return redirect(url_for('login'))  # Перенаправляем на страницу логина, если токен отсутствует
+        return redirect(url_for('login.login'))  # Перенаправляем на страницу логина, если токен отсутствует
     headers = {'Authorization': f'Bearer {token}'}
     try:
         response = requests.get(API_BASE_URL, headers=headers)
@@ -60,16 +60,20 @@ def add_to_cart():
 @cart_bp.route('/remove_from_cart', methods=['POST'])
 def remove_from_cart():
     token = session.get('token')
+   
+
     if not token:
         return redirect(url_for('login'))
 
-    product_id = request.form.get('product_id')
+    product_id = request.form.get('product_id') 
+    print(f"product_idsdssadsa': {product_id}")
+    if not product_id:
+        return "Не указан продукт для удаления", 400
 
     headers = {'Authorization': f'Bearer {token}'}
     data = {'productId': product_id}
-
     try:
-        response = requests.post(f"{API_BASE_URL}/clear", headers=headers)
+        response = requests.post(f"{API_BASE_URL}/remove", json=data, headers=headers)
         response.raise_for_status()
         return redirect(url_for('cart.view_cart'))
     except requests.RequestException as e:

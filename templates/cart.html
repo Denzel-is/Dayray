@@ -60,6 +60,7 @@
                 <p class="cart-quantity">Количество: {{ item['quantity'] }}</p>
             </div>
             <form action="{{ url_for('cart.remove_from_cart', product_id=item['productId']) }}" method="post">
+                <input type="hidden" name="product_id" value="{{ item['productId'] }}">
                 <button class="remove-button" type="submit">Удалить</button>
             </form>
         </div>

@@ -402,18 +402,22 @@ header {
 /* Звёздный рейтинг (при желании можно оставить как select) */
 .star-rating {
     display: flex;
-    gap: 5px;
-    font-size: 1.5rem;
+    gap: 5px; /* Расстояние между звездами */
     cursor: pointer;
 }
 
 .star {
-    color: #ccc;
-    transition: color var(--transition-fast);
+    font-size: 24px; /* Размер звезд */
+    color: #ccc; /* Цвет неактивных звезд */
+    transition: color 0.2s ease; /* Анимация при наведении */
 }
 
 .star.active {
-    color: var(--color-accent);
+    color: #ffc107; /* Цвет активных звезд */
+}
+
+.star:hover {
+    color: #ff9800; /* Цвет звезды при наведении */
 }
 
 /* Комментарии */
