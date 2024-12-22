@@ -775,3 +775,9 @@ footer {
         max-height: 500px;
     }
 }
+
+.footer-map {
+    width: 100%;
+    height: 300px; /* Высота карты */
+    margin-top: 20px;
+}
