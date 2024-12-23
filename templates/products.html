@@ -132,11 +132,19 @@
           <!-- Иконка "Избранное" (внутри карточки) -->
           <div class="favorite-icon-container">
             {% if product.id in favorite_item_ids %}
-              <i class="fas fa-heart favorite-icon red"
-                 onclick="toggleFavorite(event, '{{ product.id }}', true)"></i>
+              <form method="POST" action="{{ url_for('favorites.remove_from_favorites') }}">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <button type="submit" class="btn-favorite red">
+                  <i class="fas fa-heart"></i> Удалить из избранного
+                </button>
+              </form>
             {% else %}
-              <i class="fas fa-heart favorite-icon gray"
-                 onclick="toggleFavorite(event, '{{ product.id }}', false)"></i>
+              <form method="POST" action="{{ url_for('favorites.add_to_favorites') }}">
+                <input type="hidden" name="product_id" value="{{ product.id }}" />
+                <button type="submit" class="btn-favorite gray">
+                  <i class="fas fa-heart"></i> Добавить в избранное
+                </button>
+              </form>
             {% endif %}
           </div>
 

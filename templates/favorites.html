@@ -48,10 +48,10 @@
       <div class="favorites-list">
         {% for item in favorite_items %}
           <div class="favorite-item">
-            <img src="{{ item['productImageUrl'] }}" alt="{{ item['productName'] }}" class="favorite-image">
+            <img src="{{ item['imageUrl'] }}" alt="{{ item['productName'] }}" class="favorite-image">
             <div class="favorite-details">
-              <h3>{{ item['productName'] }}</h3>
-              <p class="favorite-price">{{ item['productPrice'] }} тг.</p>
+              <h3 class="favorite-name">{{ item['name'] }}</h3>
+              <p class="favorite-price">{{ item['price'] }} тг.</p>
             </div>
             <!-- Кнопка «Убрать из избранного» -->
             <form action="{{ url_for('favorites.remove_from_favorites') }}" method="post" class="remove-fav-form">

@@ -40,7 +40,7 @@ def view_cart():
 def add_to_cart():
     token = session.get('token')
     if not token:
-        return redirect(url_for('login'))
+        return redirect(url_for('login.login'))
 
     product_id = request.form.get('product_id')
     quantity = request.form.get('quantity', 1)

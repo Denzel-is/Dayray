@@ -6,7 +6,7 @@ from cart import cart_bp
 from pay import pay_bp
 #from ai import ai_bp
 import requests
-# from favorites import favorites_bp
+from favorites import favorites_bp
 
 
 from config import Config
@@ -16,14 +16,14 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 CATEGORIES_API_URL = app.config['API_URL'] + "/Categories"
-# app.register_blueprint(favorites_bp)
+app.register_blueprint(favorites_bp)
 app.register_blueprint(products_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(registration_bp)
 app.register_blueprint(product_detail_bp)
 app.register_blueprint(cart_bp)
 app.register_blueprint(pay_bp)
-#app.register_blueprint(ai_bp)
+#\app.register_blueprint(ai_bp)
 
 
 @app.route('/')
