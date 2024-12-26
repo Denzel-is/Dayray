@@ -37,7 +37,7 @@ def add_to_favorites():
     """
     token = session.get('token')
     if not token:
-        return jsonify({"success": False, "error": "Unauthorized"}), 401
+        return redirect(url_for('login.login'))
 
     product_id = request.form.get('product_id')
     if not product_id:

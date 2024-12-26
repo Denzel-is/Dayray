@@ -52,7 +52,7 @@ def product_details(id):
                 feedback_message = "Отзыв успешно отправлен!"
             except requests.exceptions.RequestException as e:
                 print(f"Ошибка при отправке отзыва: {e}")
-                feedback_message = "Произошла ошибка при отправке отзыва. Попробуйте снова позже."
+                feedback_message = "Пожалуйста, выполните вход, чтобы оставить отзыв. Мы ценим ваше мнение!"
 
             # После добавления отзыва обновим список отзывов
             try:
