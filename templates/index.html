@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LAPKA – Интернет Зоомагазин</title>
+  
+  <!-- Подключаем Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Иконки (FontAwesome) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+
+  <!-- Подключаем стили -->
+  <link rel="stylesheet" href="../static/static/css.css" />
+</head>
+
+<body>
+  <!-- Кнопка чата -->
+  <div class="chat-container">
+    <button class="chat-toggle" onclick="toggleChat()" aria-label="Открыть чат поддержки">💬</button>
+    <div id="chatBox" class="chat-box">
+      <div class="chat-header">
+        <h2>Чат с ИИ-ассистентом</h2>
+        <button onclick="toggleChat()" aria-label="Закрыть чат">✕</button>
+      </div>
+      <div id="chatBody" class="chat-body"></div>
+      <div class="chat-footer">
+        <input
+          id="chatInput"
+          type="text"
+          placeholder="Напишите сообщение..."
+          onkeydown="if(event.key === 'Enter') sendMessage()"
+        />
+        <button onclick="sendMessage()">Отправить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Хедер -->
+  <header>
+    <div class="header-content">
+      <!-- Лого -->
+      <a href="#top" class="logo-title">
+        <img src="../static/static/lapka.png" alt="LAPKA Logo" />
+        <h1>LAPKA</h1>
+      </a>
+
+      <!-- Навигация -->
+      <nav class="main-nav">
+        <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
+        <ul class="nav-list">
+          <li><a href="#top">Главная</a></li>
+          <li><a href="#categories">Категории</a></li>
+          <li><a href="#suppliers">Партнеры</a></li>
+          <li><a href="#footer">Контакты</a></li>
+        </ul>
+      </nav>
+
+      <!-- Авторизация / Корзина -->
+      <div class="auth-cart">
+        {% if 'username' in session %}
+          <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
+        {% else %}
+          <a href="/login" class="auth-link">Войти</a>
+          <a href="/register" class="auth-link">Регистрация</a>
+        {% endif %}
+        <!-- <div class="favorite-header-icon">
+          <i class="fas fa-heart"></i>
+          <span class="favorite-tooltip">Избранное</span>
+        </div> -->
+        <a href="/cart" class="cart-link">
+          <img src="../static/static/cart.png" alt="Корзина" />
+          Корзина
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <main>
+    {% if payment_status %}
+      <div class="alert alert-success">{{ payment_status }}</div>
+    {% endif %}
+
+    <!-- Баннер -->
+    <section class="banner" id="top">
+      <div class="banner-content">
+        <div class="banner-text">
+          <h2>Добро пожаловать в LAPKA</h2>
+          <p>Товары для питомцев от лучших поставщиков. Корма, игрушки, аксессуары – всё, что нужно уже здесь!</p>
+          <a href="#categories" class="banner-button">Перейти к товарам</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Категории -->
+    <section class="section-wrapper" id="categories">
+      <h2 class="section-title">Категории</h2>
+      <p class="section-subtitle">Выберите то, что нужно вашему питомцу</p>
+      <div class="categories">
+        {% if error %}
+          <p class="error">{{ error }}</p>
+        {% elif categories %}
+          {% for category in categories %}
+            <div class="category-item-supercool">
+              <div class="cat-image">
+                <img src="{{ category.imageUrl }}" alt="{{ category.name }}" />
+              </div>
+              <div class="cat-info">
+                <h3 class="cat-title">{{ category.name }}</h3>
+                <p class="cat-desc">Найдите всё необходимое в этой категории</p>
+                <a href="/products?categoryId={{ category.id }}" class="cat-button">Смотреть товары</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>Категории не найдены</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Партнеры -->
+    <section class="section-wrapper" id="suppliers">
+      <h2 class="section-title">Наши Партнеры</h2>
+      <p class="section-subtitle">Надежные производители и поставщики</p>
+      <div class="suppliers">
+        <div class="supplier">
+          <div class="supplier-circle">
+            <img src="../static/static/sup1.png" alt="sup1 Logo" />
+          </div>
+          <h3>Sup1</h3>
+          <p>Оценка: ★★★★☆</p>
+        </div>
+        <div class="supplier highlight">
+          <div class="supplier-circle">
+            <img src="../static/static/sup2.png" alt="sup2 Logo" />
+          </div>
+          <h3>Car’ Zverey</h3>
+          <p>Оценка: ★★★★★</p>
+        </div>
+        <div class="supplier">
+          <div class="supplier-circle">
+            <img src="../static/static/sup3.png" alt="sup3 Logo" />
+          </div>
+          <h3>AmanMisik</h3>
+          <p>Оценка: ★★★★☆</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Футер -->
+  <footer id="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>О нас</h3>
+        <p>
+          Интернет Зоомагазин LAPKA – ваш надежный поставщик товаров для питомцев.
+          Мы стремимся обеспечить качественный сервис и широкий ассортимент.
+        </p>
+      </div>
+      <div class="footer-section">
+        <h3>Контакты</h3>
+        <p>Телефон: +7 771 525 10 40</p>
+        <p>Email: lapkazoo@gmail.com</p>
+      </div>
+      <div class="footer-section">
+        <h3>Следите за нами</h3>
+        <p><a href="#">Instagram</a></p>
+      </div>
+    </div>
+    <div class="footer-map" id="map"></div>
+    <div class="footer-bottom">
+      <p>© 2024 Интернет Магазин LAPKA, Все права защищены</p>
+    </div>
+  </footer>
+
+  <!-- Подключаем скрипт -->
+  <script src="../static/static/index.js"></script>
+  <!-- Google Maps (замените ключ на реальный) -->
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMgWJNDXenCTh040ltJ68nXFQPByhpWHs&callback=initMap"></script>
+</body>
+</html>

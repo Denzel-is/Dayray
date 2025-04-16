@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Избранное</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/static/css1.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <!-- Хедер -->
+  <header>
+    <div class="header-content">
+      <a href="/" class="logo-title">
+        <img src="../static/static/lapka.png" alt="LAPKA Logo"/>
+        <h1>LAPKA</h1>
+      </a>
+      <nav class="main-nav">
+        <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
+        <ul class="nav-list">
+          <li><a href="/">Главная</a></li>
+          <li><a href="/products">Товары</a></li>
+          <li><a href="/cart">Корзина</a></li>
+          <li><a href="/favorites">Избранное</a></li>
+          <li><a href="#footer">Контакты</a></li>
+        </ul>
+      </nav>
+      <div class="auth-cart">
+        {% if 'username' in session %}
+          <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
+        {% else %}
+          <a href="/login" class="auth-link">Войти</a>
+          <a href="/register" class="auth-link">Регистрация</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="favorites-container">
+    <h2 class="favorites-title">Избранные товары</h2>
+
+    {% if favorite_items %}
+      <div class="favorites-list">
+        {% for item in favorite_items %}
+          <div class="favorite-item">
+            <img src="{{ item['productImageUrl'] }}" alt="{{ item['productName'] }}" class="favorite-image">
+            <div class="favorite-details">
+              <h3>{{ item['productName'] }}</h3>
+              <p class="favorite-price">{{ item['productPrice'] }} тг.</p>
+            </div>
+            <!-- Кнопка «Убрать из избранного» -->
+            <form action="{{ url_for('favorites.remove_from_favorites') }}" method="post" class="remove-fav-form">
+              <input type="hidden" name="product_id" value="{{ item['productId'] }}">
+              <button type="submit" class="remove-fav-button">Удалить</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-favorites">Здесь пока ничего нет.</p>
+    {% endif %}
+  </main>
+
+  <script>
+    function toggleMenu() {
+      const navList = document.querySelector('.nav-list');
+      navList.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Войти</title>
     <link rel="stylesheet" href="../static/static/login.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Основной шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
 </head>
 <body>
     <div class="login-container">
+        <div class="image-container">
+            <img src="../static/static/login.svg" alt="Войти баннер" class="header-image">
+        </div>
         <h1>Войти</h1>
-        <form action="{{ url_for('login') }}" method="POST">
+        <form id="login-form">
             <div class="form-group">
                 <label for="username">Имя пользователя:</label>
                 <input type="text" id="username" name="username" required>
@@ -18,9 +25,53 @@
                 <label for="password">Пароль:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Войти</button>
-          <a href="/register" class="button-reg">Регистрация</a>
+            <button type="submit" class="submit-button">Войти</button>
+            <a href="/register" class="reg-link">Регистрация</a>
         </form>
+        <p id="error-message" class="error-message" style="display:none;">Неверный логин или пароль</p>
     </div>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const credentials = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(credentials)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Неверный логин или пароль');
+                }
+
+                const data = await response.json();
+                
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', credentials.username);
+                    window.location.href = '/';
+                } else {
+                    throw new Error('Токен не получен');
+                }
+
+            } catch (err) {
+                errorMessage.style.display = 'block';
+                console.error('Login error:', err);
+            }
+        });
+    </script>
 </body>
 </html>

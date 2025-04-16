@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Главная";
+}
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <h1 class="welcome-message text-center">Добро пожаловать в Административную панель, пожалуйста, войдите или зарегистрируйтесь.</h1>
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <section class="hero">
+        <h1>Добро пожаловать в Административную панель</h1>
+    </section>
+}
+@if (User.Identity.IsAuthenticated) {
+    <h2 class="text-muted mb-4 text-center">Здравствуйте, @User.Identity.Name!</h2>
+
+         <div class="row justify-content-center">
+   
+
+        <!-- Карточка для управления продуктами -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card d-flex flex-column" style="height: 350px;">  <!-- Установим жесткую высоту -->
+                <div class="card-header text-white text-center" style="background-color: #28a745;">
+                    <h4 class="mb-0">Управление продуктами</h4>
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-between"> <!-- Добавляем гибкость для содержания -->
+                    <h5 class="card-title">Управляйте продуктами</h5>
+                    <p class="card-text">Добавляйте, редактируйте или удаляйте продукты.</p>
+                    <a href="/Product/Index" class="btn btn-outline-success rounded-pill">Перейти к продуктам</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Карточка для управления сотрудниками -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card d-flex flex-column" style="height: 350px;">  <!-- Установим жесткую высоту -->
+                <div class="card-header text-white text-center" style="background-color: #ffc107;">
+                    <h4 class="mb-0">Список клиентов</h4>
+                </div>
+                    <div class="card-body text-center d-flex flex-column justify-content-between"> <!-- Добавляем гибкость для содержания -->
+                        <h5 class="card-title">Список клиентов</h5>
+                        <p class="card-text">Добавляйте, редактируйте или удаляйте клиентов.</p>
+                        <a href="/Customers/Index" class="btn btn-outline-warning rounded-pill">Перейти к клиентам</a>
+                    </div>
+                </div>
+        </div>
+    </div>
+}

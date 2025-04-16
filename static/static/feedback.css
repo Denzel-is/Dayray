@@ -1,187 +1,152 @@
-/* Основные стили для страницы */
+/* Общие стили */
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #F8F9FA; /* Светлый фон */
-    color: #34495E; /* Темно-синий текст */
+    font-family: 'Inter', Arial, sans-serif;
+    background-color: #FAFAFA;
+    color: #333;
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: #2C3E50; /* Темно-синий фон */
+    background-color: #FF5A5A;
     color: white;
     padding: 15px 20px;
-    display: flex;
-    justify-content: center; /* Центрируем содержимое */
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
-    z-index: 1000;
-    height: 60px; /* Фиксируем высоту для лучшего выравнивания */
+    z-index: 100;
 }
 
 #backButton {
-    position: absolute;
-    left: 20px;
-    background-color: white;
-    color: #2C3E50;
+    background: white;
+    color: #FF5A5A;
     padding: 10px 15px;
-    text-decoration: none;
+    border: 1px solid #FF5A5A;
     border-radius: 5px;
-    border: 2px solid #386898;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s, color 0.3s;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 #backButton:hover {
-    background-color: #2C3E50;
+    background-color: #FF5A5A;
     color: white;
 }
 
-/* Стили для заголовка и формы */
 main {
+    margin-top: 80px;
     text-align: center;
-    padding: 100px 0 40px; /* Увеличен верхний отступ для правильного отображения */
+    padding: 20px;
 }
 
-/* Стили для формы обратной связи */
+/* Форма */
 .feedback-form {
-    width: 50%;
+    width: 100%;
+    max-width: 600px;
     margin: 0 auto;
-    padding: 40px;
-    background-color: #FFF;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    border-top: 5px solid #3498DB;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #FF5A5A;
 }
 
-/* Стили для полей ввода и текстовых областей */
-.feedback-form input[type="text"],
 .feedback-form textarea {
     width: 100%;
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #BDC3C7;
+    height: 120px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    font-size: 1em;
     border-radius: 8px;
-    font-size: 1.1em;
+    resize: none;
+    transition: border-color 0.3s ease;
+}
+
+.feedback-form textarea:focus {
+    border-color: #FF5A5A;
+    outline: none;
 }
 
 .feedback-form button {
     width: 100%;
-    padding: 15px;
-    background-color: #27AE60;
-    color: white;
+    padding: 10px;
+    background-color: #FF5A5A;
     border: none;
+    color: white;
     border-radius: 8px;
-    cursor: pointer;
     font-size: 1.1em;
+    cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .feedback-form button:hover {
-    background-color: #229954;
+    background-color: #E04B4B;
 }
 
-/* Стили для контейнера отзывов */
+/* Отзывы */
 .feedback-container {
-    width: 70%;
     margin: 30px auto;
-    background-color: #FFF;
+    width: 100%;
+    max-width: 800px;
+    background: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-left: 5px solid #3498DB;
 }
 
-/* Стили для заголовка */
-.feedback-container h2 {
-    color: #2C3E50;
-    font-size: 1.8em;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #DDE2E5;
-}
-
-/* Стили для списка отзывов */
 .feedback-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Пространство между отзывами */
+    list-style: none;
+    padding: 0;
 }
 
-/* Оформление одного отзыва */
 .feedback-item {
     display: flex;
-    align-items: flex-start;
-    padding: 20px;
-    background: #F9F9F9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    gap: 20px;
+    background: #F8F9FA;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease;
 }
 
 .feedback-item:hover {
-    background-color: #F1F1F1;
+    background: #EDEDED;
 }
 
-/* Секция с именем пользователя и датой */
 .feedback-info {
-    width: 25%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding-right: 20px; /* Отступ справа для отделения от комментария */
-    text-align: left;
+    font-weight: 600;
+    color: #555;
 }
 
 .feedback-name {
-    font-weight: bold;
-    color: #2C3E50;
-    font-size: 1.2em;
+    font-size: 1.1em;
+    color: #333;
 }
 
 .feedback-date {
-    font-size: 0.85em;
-    color: #7F8C8D;
-    margin-top: 5px;
+    font-size: 0.9em;
+    color: #888;
 }
 
-/* Секция с текстом отзыва */
 .feedback-text {
-    width: 75%;
-    text-align: left;
-    color: #34495E;
-    font-size: 1.5em;
-    line-height: 1.6;
-    
+    flex-grow: 1;
+    font-size: 1em;
+    color: #444;
 }
 
-/* Адаптивные стили */
+/* Адаптивность */
 @media (max-width: 768px) {
     .feedback-form, .feedback-container {
         width: 90%;
-    }
-
-    .feedback-form {
-        padding: 30px;
+        padding: 15px;
     }
 
     .feedback-item {
-        flex-direction: column; /* Для мобильных устройств отзывы располагаются вертикально */
-    }
-
-    .feedback-info {
-        width: 100%;
-        text-align: center;
-        padding-right: 0;
-        margin-bottom: 10px;
-    }
-
-    .feedback-text {
-        width: 100%;
-        text-align: center;
+        flex-direction: column;
+        gap: 10px;
     }
 }

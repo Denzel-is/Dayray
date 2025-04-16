@@ -1,0 +1,20 @@
+﻿@model AdminDayray.Migrations.Category
+
+@{
+    ViewData["Title"] = "Удалить категорию";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-danger">Удалить категорию</h2>
+
+    <div class="alert alert-warning">
+        <strong>Внимание!</strong> Вы уверены, что хотите удалить категорию <strong>@Model.Name</strong>?
+    </div>
+
+    <form asp-action="DeleteCategory" asp-route-id="@Model.CategoryId">
+        <input type="hidden" asp-for="CategoryId" />
+
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <a asp-action="Index" class="btn btn-secondary">Отменить</a>
+    </form>
+</div>

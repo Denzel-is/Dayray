@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Продукты для кошек</title>
+  
+  <!-- Подключаем шрифты -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <!-- Иконки FontAwesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <!-- Ваш основной CSS -->
+  <link rel="stylesheet" href="../static/static/css1.css" />
+</head>
+
+<body>
+  <!-- Хедер с навбаром -->
+  <header>
+    <div class="header-content">
+      <!-- Лого -->
+      <a href="/" class="logo-title">
+        <img src="../static/static/lapka.png" alt="LAPKA Logo" />
+        <h1>LAPKA</h1>
+      </a>
+
+      <!-- Навигация (Navbar) -->
+      <nav class="main-nav">
+        <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
+        <ul class="nav-list">
+          <li><a href="/">Главная</a></li>
+          <li><a href="#categories">Категории</a></li>
+          <li><a href="#suppliers">Партнеры</a></li>
+          <li><a href="#footer">Контакты</a></li>
+        </ul>
+      </nav>
+
+      <!-- Поисковая строка (при hover — «История поиска») -->
+      <div class="search-filter-wrapper">
+        <div class="search-container">
+          <form action="/products" method="get" onsubmit="return smartSearchSubmit(event)">
+            <input
+              type="text"
+              name="query"
+              placeholder="Найти продукт..."
+              class="search-input"
+              id="searchInput"
+              required
+            />
+            <button type="submit" class="search-button">Поиск</button>
+
+            <!-- Поповер "История поиска" (показывается при hover на .search-container) -->
+            <div class="history-popover" id="historyPopover">
+              <div class="history-header">
+                <h3>История поиска</h3>
+                <button class="clear-history-btn" onclick="clearSearchHistory()">
+                  <i class="fas fa-trash"></i> Очистить всё
+                </button>
+              </div>
+              <ul class="history-list" id="historyList"></ul>
+            </div>
+          </form>
+        </div>
+
+        <!-- Иконка "Фильтр" + поповер под иконкой -->
+        <div class="filter-icon-container">
+          <i class="fas fa-filter filter-icon" onclick="toggleFilterPopover()"></i>
+          <span class="filter-tooltip">Фильтр</span>
+
+          <!-- Поповер Фильтра (под иконкой) -->
+          <div class="filter-popover" id="filterPopover">
+            <h3>Сортировать по:</h3>
+            <label class="filter-option">
+              <input type="radio" name="sortOption" value="nameAsc" />
+              Названию (А-Я)
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="sortOption" value="nameDesc" />
+              Названию (Я-А)
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="sortOption" value="priceAsc" />
+              Цене (сначала дешёвые)
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="sortOption" value="priceDesc" />
+              Цене (сначала дорогие)
+            </label>
+            <button class="apply-filter-btn" onclick="applyFilter()">Применить</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Авторизация / Корзина / Избранное -->
+      <div class="auth-cart">
+        {% if 'username' in session %}
+          <a href="{{ url_for('login.logout') }}" class="auth-link">Выход</a>
+        {% else %}
+          <a href="/login" class="auth-link">Войти</a>
+          <a href="/register" class="auth-link">Регистрация</a>
+        {% endif %}
+        
+        <!-- Иконка «Избранное» (сердечко) -->
+        <div class="favorite-header-icon">
+          <i class="fas fa-heart"></i>
+          <span class="favorite-tooltip">Избранное</span>
+        </div>
+
+        <!-- Корзина -->
+        <a href="/cart" class="cart-link">
+          <img src="../static/static/cart.png" alt="Корзина" /> Корзина
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Список продуктов -->
+  <main class="product-container" id="productContainer">
+    {% if products %}
+      {% for product in products %}
+        <div class="product-card" 
+             data-product-id="{{ product.id }}" 
+             data-product-name="{{ product.name | lower }}">
+
+          <!-- Иконка "Избранное" (внутри карточки) -->
+          <div class="favorite-icon-container">
+            {% if product.id in favorite_item_ids %}
+              <i class="fas fa-heart favorite-icon red"
+                 onclick="toggleFavorite(event, '{{ product.id }}', true)"></i>
+            {% else %}
+              <i class="fas fa-heart favorite-icon gray"
+                 onclick="toggleFavorite(event, '{{ product.id }}', false)"></i>
+            {% endif %}
+          </div>
+
+          <!-- Ссылка на детальную страницу -->
+          <a href="/product/{{ product.id }}">
+            <div class="product-image-container">
+              <img
+                src="{{ product.imageUrl }}"
+                alt="{{ product.name }}"
+                class="product-image"
+              />
+            </div>
+            <div class="product-info">
+              <h2 class="product-title">{{ product.name }}</h2>
+              <p class="product-description">{{ product.description }}</p>
+              <div class="product-details">
+                <p class="product-price">{{ product.price }} тг.</p>
+                <p class="product-stock">В наличии: {{ product.count }} шт.</p>
+              </div>
+            </div>
+          </a>
+
+          {% if product.id in cart_item_ids %}
+            <button type="button" class="in-cart-button" disabled>
+              <i class="fas fa-check"></i>
+              <span>В корзине</span>
+            </button>
+          {% else %}
+            <form action="{{ url_for('cart.add_to_cart') }}" method="post" class="add-to-cart-form">
+              <input type="hidden" name="product_id" value="{{ product.id }}" />
+              <div class="quantity-input">
+                <button
+                  type="button"
+                  class="quantity-btn minus"
+                  aria-label="Уменьшить количество"
+                  onclick="changeQuantity(-1, '{{ product.id }}')"
+                >-</button>
+                <input
+                  type="number"
+                  id="quantity-{{ product.id }}"
+                  name="quantity"
+                  value="1"
+                  min="1"
+                  max="{{ product.count }}"
+                  required
+                />
+                <button
+                  type="button"
+                  class="quantity-btn plus"
+                  aria-label="Увеличить количество"
+                  onclick="changeQuantity(1, '{{ product.id }}')"
+                >+</button>
+              </div>
+              <button type="submit" class="add-to-cart-button">
+                <i class="fas fa-cart-plus"></i>
+                <span>Добавить в корзину</span>
+              </button>
+            </form>
+          {% endif %}
+          
+          {% if error %}
+            <p class="error-message">{{ error }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="no-products">Продукты не найдены.</p>
+    {% endif %}
+  </main>
+
+  <!-- Футер -->
+  <footer id="footer" style="text-align:center; padding:20px; background:#fff;">
+    <p>© 2024 LAPKA. Все права защищены.</p>
+  </footer>
+
+  <!-- Подключаем скрипты -->
+  <script src="../static/static/script.js"></script>
+</body>
+</html>

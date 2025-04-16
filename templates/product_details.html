@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <title>{{ product.name }}</title>
+    <link rel="stylesheet" href="../static/static/prod.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Основной шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
+    <!-- Подключаем Font Awesome для иконок -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<style>
+ .star-rating i {
+    font-size: 30px;  /* Размер иконок */
+    color: #ddd;      /* Цвет неактивных звезд */
+    cursor: pointer;  /* Указатель при наведении */
+    transition: color 0.3s ease;
+}
+
+.star-rating i.active {
+    color: gold; /* Цвет активных звезд */
+}
+
+.star-rating i:hover {
+    color: gold; /* Цвет при наведении */
+}
+</style>
+<body>
+    <!-- Хедер -->
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo-title">
+                <img src="../static/static/lapka.png" alt="LAPKA Logo">
+                <h1>LAPKA</h1>
+            </a>
+            <nav class="main-nav">
+                <button class="menu-toggle" aria-label="Переключить меню" onclick="toggleMenu()">☰</button>
+                <ul class="nav-list">
+                    <li><a href="/">Главная</a></li>
+                    <li><a href="#categories">Категории</a></li>
+                    <li><a href="#suppliers">Партнеры</a></li>
+                    <li><a href="#footer">Контакты</a></li>
+                </ul>
+            </nav>
+            <div class="search-container">
+                <form action="/products" method="get">
+                    <input type="text" name="query" placeholder="Найти продукт..." class="search-input" required>
+                    <button type="submit" class="search-button">Поиск</button>
+                </form>
+            </div>
+            <div class="auth-cart">
+                <a href="/login" class="auth-link"> Войти</a>
+                <a href="/register" class="auth-link"> Регистрация</a>
+                <a href="/cart" class="cart-link">
+                    <img src="../static/static/cart.png" alt="Корзина"> Корзина
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="product-page-container">
+        {% if product %}
+        <div class="product-details">
+            <div class="product-image-container">
+                <img src="{{ product.imageUrl }}" alt="{{ product.name }}" class="product-image">
+            </div>
+            <div class="product-info">
+                <h1 class="product-title">{{ product.name }}</h1>
+                <p class="product-description">{{ product.description }}</p>
+                <p class="product-price"><i class="fas fa-tag"></i> Цена: {{ product.price }} тг.</p>
+                <p class="product-stock"><i class="fas fa-box"></i> В наличии: {{ product.count }} шт.</p>
+
+                {% if error_message %}
+                    <p class="error-message">{{ error_message }}</p>
+                {% endif %}
+
+                <form action="{{ url_for('cart.add_to_cart') }}" method="post" class="add-to-cart-form">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <label for="quantity">Количество:</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.count }}" required>
+                    <button type="submit" class="add-to-cart-button"><i class="fas fa-cart-plus"></i> Добавить в корзину</button>
+                </form>
+
+                <a href="/" class="back-button">← Назад к списку продуктов</a>
+            </div>
+        </div>
+
+        <!-- Оставить отзыв -->
+        <div class="feedback-container">
+            <h2><i class="fas fa-comment-dots"></i> Оставить отзыв</h2>
+            <form action="{{ url_for('product_detail.product_details', id=product.id) }}" method="post" class="feedback-form">
+                <label>Оценка:</label>
+                <div class="star-rating">
+                    <i class="fas fa-star star" data-value="1"></i>
+                    <i class="fas fa-star star" data-value="2"></i>
+                    <i class="fas fa-star star" data-value="3"></i>
+                    <i class="fas fa-star star" data-value="4"></i>
+                    <i class="fas fa-star star" data-value="5"></i>
+                    <input type="hidden" name="rating" id="rating" value="5">
+                </div>
+
+                <label for="comment">Комментарий:</label>
+                <textarea id="comment" name="comment" required></textarea>
+                
+                <button type="submit" class="send-feedback-button"><i class="fas fa-paper-plane"></i> Отправить отзыв</button>
+            </form>
+
+            {% if feedback_message %}
+            <p class="feedback-message">{{ feedback_message }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Отображение комментариев -->
+        <div class="comments-section">
+            <h2><i class="fas fa-comments"></i> Отзывы покупателей</h2>
+            {% if feedbacks and feedbacks|length > 0 %}
+                {% for feedback in feedbacks %}
+                <div class="comment">
+                    <div class="comment-header">
+                        <div class="comment-user">
+                            <strong>{{ feedback['userName'] }}</strong> <!-- Имя пользователя -->
+                        </div>
+                        <div class="comment-rating">
+                            {% for i in range(feedback['rating']) %}★{% endfor %}
+                            {% for i in range(5 - feedback['rating']) %}☆{% endfor %}
+                        </div>
+                    </div>
+                    <div class="comment-body">
+                        <p class="comment-text">{{ feedback['comment'] }}</p>
+                    </div>
+                    {% if feedback['created_at'] %}
+                    <div class="comment-footer">
+                        <i class="fas fa-clock"></i> {{ feedback['created_at'] }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-comments">Отзывов пока нет. Будьте первым!</p>
+            {% endif %}
+        </div>
+
+        {% else %}
+        <p class="no-product-error">Ошибка при загрузке данных о продукте. Попробуйте позже.</p>
+        {% endif %}
+    </main>
+
+    <script>
+        // Логика звёздного рейтинга
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star-rating .star');
+            const ratingInput = document.getElementById('rating');
+            
+            stars.forEach(star => {
+                star.addEventListener('mouseover', () => {
+                    const value = parseInt(star.getAttribute('data-value'));
+                    highlightStars(value);
+                });
+
+                star.addEventListener('mouseout', () => {
+                    const currentRating = parseInt(ratingInput.value);
+                    highlightStars(currentRating);
+                });
+
+                star.addEventListener('click', () => {
+                    const value = parseInt(star.getAttribute('data-value'));
+                    ratingInput.value = value;
+                    highlightStars(value);
+                });
+            });
+
+            function highlightStars(value) {
+                stars.forEach(star => {
+                    const starValue = parseInt(star.getAttribute('data-value'));
+                    if (starValue <= value) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+            }
+
+            highlightStars(parseInt(ratingInput.value));
+        });
+    </script>
+</body>
+</html>

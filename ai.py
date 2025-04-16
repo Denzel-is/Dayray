@@ -1,77 +1,146 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request,Blueprint
 from flask_cors import CORS
 import logging
-from logging.handlers import RotatingFileHandler
+from concurrent_log_handler import ConcurrentRotatingFileHandler
 import os
+import json
+import openai
+import numpy as np
+from dotenv import load_dotenv  # Для загрузки переменных окружения
 
-app = Flask(__name__)
-CORS(app)
+ai_bp = Blueprint('ai', __name__)
 
-# Set up logging
+# Загрузка переменных окружения из файла .env
+load_dotenv()
+
+# Установка API ключа OpenAI из переменной окружения
+openai.api_key = os.getenv('OPENAI_API_KEY')
+logger = logging.getLogger('ai_logger')
+logger.setLevel(logging.INFO)
+
+# Set up logging handler
+handler = ConcurrentRotatingFileHandler("app.log", maxBytes=1024 * 1024, backupCount=5)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+# Проверка, что API-ключ установлен
+if openai.api_key:
+    logger.info('API key successfully loaded.')
+else:
+    logger.error('API key not found. Please set OPENAI_API_KEY in your .env file.')
+
+# Настройка логирования
 if not os.path.exists('logs'):
     os.mkdir('logs')
-file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
+
+# Используем ConcurrentRotatingFileHandler
+file_handler = ConcurrentRotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
 file_handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
 ))
 file_handler.setLevel(logging.INFO)
-app.logger.addHandler(file_handler)
-app.logger.setLevel(logging.INFO)
-app.logger.info('Pet Store Chat Bot startup')
+logger.addHandler(file_handler)
+logger.setLevel(logging.INFO)
+logger.info('LAPKA Chat Bot startup')
 
-# Product catalog data
-CATALOG = [
-    {
-        "question": "Что вы можете сказать о Корм Eukanuba для активных собак?",
-        "answer": "Полноценный и сбалансированный корм для собак с повышенной активностью, обогащенный необходимыми витаминами и минералами. Цена: 5300.00$. В наличии: 25 шт."
-    },
-    {
-        "question": "Что вы можете сказать о Корм Purina One для пожилых собак?",
-        "answer": "Специализированный корм для пожилых собак, поддерживающий здоровье и активность на протяжении всей жизни. Цена: 4500.00$. В наличии: 40 шт."
-    },
-    # ... Add all other products here ...
-    {
-        "question": "Что вы можете сказать о Клетка EcoBird Natural Habitat?",
-        "answer": "Экологически чистая клетка, имитирующая естественную среду обитания птиц. Цена: 10000.00$. В наличии: 6 шт."
-    }
-]
+# Загрузка данных из JSONL файла
+DATA = []
+with open('products_data.jsonl', 'r', encoding='utf-8') as f:
+    for line in f:
+        item = json.loads(line)
+        messages = item['messages']
+        if len(messages) >= 2:
+            user_message = messages[0]['content']
+            assistant_message = messages[1]['content']
+            DATA.append({
+                'question': user_message.lower().strip(),
+                'answer': assistant_message.strip()
+            })
 
-@app.route('/')
-def index():
-    app.logger.info('Index page accessed')
-    return render_template('check_api.html')
+# Определение функции для получения эмбеддинга
+def get_embedding(text, model="text-embedding-ada-002"):
+    result = openai.Embedding.create(
+        input=[text],
+        model=model
+    )
+    embedding = result['data'][0]['embedding']
+    return embedding
 
-@app.route('/chat', methods=['POST'])
+# Определение функции для вычисления косинусного сходства
+def cosine_similarity(a, b):
+    a = np.array(a)
+    b = np.array(b)
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+# Создание эмбеддингов для базы знаний
+embeddings = []
+for item in DATA:
+    question = item['question']
+    embedding = get_embedding(question)
+    embeddings.append({'embedding': embedding, 'item': item})
+
+def find_relevant_items(user_question, top_k=3):
+    user_embedding = get_embedding(user_question)
+    similarities = []
+    for entry in embeddings:
+        entry_embedding = entry['embedding']
+        similarity = cosine_similarity(user_embedding, entry_embedding)
+        similarities.append((similarity, entry['item']))
+    # Сортировка по убыванию схожести
+    similarities.sort(key=lambda x: x[0], reverse=True)
+    relevant_items = [item for _, item in similarities[:top_k]]
+    return relevant_items
+
+def generate_answer(user_question):
+    relevant_items = find_relevant_items(user_question)
+    knowledge = ""
+    for item in relevant_items:
+        knowledge += f"Q: {item['question']}\nA: {item['answer']}\n\n"
+    
+    # Создаем список сообщений для чат-комплита
+    messages = [
+        {"role": "system", "content": "Вы выступаете в роли ассистента зоомагазина 'LAPKA'. Используйте только приведенную ниже информацию о товарах для ответа на вопрос пользователя. Не добавляйте информацию из других источников."},
+        {"role": "system", "content": f"Информация о товарах:\n{knowledge}"},
+        {"role": "user", "content": user_question}
+    ]
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # Убедитесь, что у вас есть доступ к этой модели
+        messages=messages,
+        max_tokens=150,
+        temperature=0.7,
+        n=1,
+        stop=None,
+    )
+    answer = response['choices'][0]['message']['content'].strip()
+    return answer
+
+# @ai_bp.route('/')
+# def index():
+#     logger.info('html page accessed')
+#     return render_template('html.html')  # Убедитесь, что файл chat.html находится в папке templates
+
+@ai_bp.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
     if not data:
-        app.logger.warning('No JSON data provided in chat request')
+        logger.warning('No JSON data provided in chat request')
         return jsonify({"error": "No JSON data provided."}), 400
 
-    user_message = data.get("message", "").strip().lower()
+    user_message = data.get("message", "").strip()
     if not user_message:
-        app.logger.warning('Empty message received in chat request')
+        logger.warning('Empty message received in chat request')
         return jsonify({"error": "Message is empty."}), 400
 
-    app.logger.info(f'Received chat request: {user_message}')
+    logger.info(f'Received chat request: {user_message}')
 
-    # Search for the most relevant answer in the catalog
-    best_match = None
-    best_match_words = 0
-    for item in CATALOG:
-        question_words = set(item["question"].lower().split())
-        message_words = set(user_message.split())
-        common_words = question_words.intersection(message_words)
-        if len(common_words) > best_match_words:
-            best_match = item
-            best_match_words = len(common_words)
+    # Генерируем ответ с помощью модели GPT
+    try:
+        answer = generate_answer(user_message)
+        logger.info(f'Generated answer: {answer}')
+        return jsonify({"reply": answer})
+    except Exception as e:
+        logger.error(f'Error generating answer: {e}')
+        return jsonify({"reply": "Извините, произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже."})
 
-    if best_match:
-        app.logger.info(f'Found match for query: {user_message}')
-        return jsonify({"reply": best_match["answer"]})
-    else:
-        app.logger.warning(f'No match found for query: {user_message}')
-        return jsonify({"reply": "Извините, я не нашел информацию по вашему запросу. Попробуйте задать вопрос иначе."})
 
-if __name__ == "__main__":
-    app.run(debug=True)

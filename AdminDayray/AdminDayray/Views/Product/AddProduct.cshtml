@@ -1,0 +1,35 @@
+﻿@model AdminDayray.Migrations.Product
+
+@{
+    ViewData["Title"] = "Добавить новый продукт";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-primary">Добавить продукт в категорию</h2>
+
+    <form asp-action="AddProduct" method="post">
+        <input type="hidden" name="CategoryId" value="@Model.CategoryId" />
+
+        <div class="form-group">
+            <label for="Name">Название продукта</label>
+            <input type="text" class="form-control" id="Name" name="Name" required />
+        </div>
+        <div class="form-group">
+            <label for="Description">Описание</label>
+            <textarea class="form-control" id="Description" name="Description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="Price">Цена</label>
+            <input type="number" class="form-control" id="Price" name="Price" required />
+        </div>
+        <div class="form-group">
+            <label for="StockQuantity">Количество</label>
+            <input type="number" class="form-control" id="StockQuantity" name="StockQuantity" required />
+        </div>
+        <div class="form-group">
+            <label for="MapP">Изображение (путь)</label>
+            <input type="text" class="form-control" id="MapP" name="MapP" />
+        </div>
+        <button type="submit" class="btn btn-success mt-3">Добавить продукт</button>
+    </form>
+</div>
